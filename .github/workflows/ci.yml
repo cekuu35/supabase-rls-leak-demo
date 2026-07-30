@@ -1,0 +1,37 @@
+name: ci
+
+# Runs on both branches. The point of this workflow is that the run URLs are
+# public and permanent: one shows the suite failing on `broken`, the other
+# shows the identical suite passing on `fixed`.
+on:
+  push:
+    branches: [broken, fixed, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Which branch state is this?
+        run: |
+          if [ -f db/policies.sql ]; then
+            echo "db/policies.sql present -> RLS policies applied -> suite should PASS"
+          else
+            echo "db/policies.sql absent  -> no RLS -> suite should FAIL, that is the demo"
+          fi
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm run test
