@@ -1,17 +1,23 @@
 # Your Supabase app is probably leaking rows between users
 
-This repository reproduces the most common data leak in AI-generated Supabase
-apps, and fixes it. Two branches, one file of difference, the same test suite
-on both.
+This repository reproduces a common data leak in AI-generated Supabase apps,
+and fixes it. Two branches, one file of difference, the same test suite on both.
 
 ```bash
-npm install
+npm ci
 npm test
 ```
 
 No Docker, no Supabase project, no credentials. The tests run a real Postgres
-([PGlite](https://pglite.dev), Postgres compiled to WebAssembly), so the
-row-level security here is the same row-level security your project runs.
+([PGlite](https://pglite.dev/docs/about), Postgres compiled to WebAssembly), so
+the row-level security exercised here is the same row-level security your
+project runs.
+
+[PGlite](https://pglite.dev/docs/about) exercises PostgreSQL
+[row security](https://www.postgresql.org/docs/17/ddl-rowsecurity.html)
+semantics locally, but it does not emulate Supabase Auth, PostgREST, network
+exposure, or production configuration. It reproduces the database-level rule
+that decides which rows a query returns — not the service in front of it.
 
 | branch  | `db/policies.sql` | `npm test`                |
 | ------- | ----------------- | ------------------------- |
@@ -25,6 +31,9 @@ On `broken`:
   → user B received 1 row(s) belonging to another user:
     ["A: card ending 4471, expiry 09/29"]
 ```
+
+That note is synthetic seed data, not a real card. The suite plants two fake
+rows — one per test user — so the leak has something recognizable to expose.
 
 ## The symptom
 
@@ -50,6 +59,12 @@ asks it a slightly different question.
 
 Case 3 is the one that ships.
 
+Disabling (or never enabling) RLS removes the row filter, but that is only half
+the exposure story: whether those rows actually reach a caller still depends on
+table grants and on whether the table is reachable through your API and exposed
+schema. RLS is the row-level gate; grants and API/schema exposure are the gates
+around it. This demo pins down the row-level gate.
+
 ## The query that tells you which
 
 Run this against your own database:
@@ -67,13 +82,19 @@ group by c.relname, c.relrowsecurity
 order by c.relrowsecurity, c.relname;
 ```
 
-Any row with `rls_enabled = false` is readable by every signed-in user of your
-application. `policy_count > 0` alongside `rls_enabled = false` is case 3.
+Any row with `rls_enabled = false` is a table where Postgres applies no row
+filter to non-owner roles. Whether that turns into a leak depends on the grants
+and API exposure above — but `policy_count > 0` alongside `rls_enabled = false`
+is case 3, and worth treating as a leak until proven otherwise.
 
 ## The fix
 
-[`db/policies.sql`](db/policies.sql) — enable RLS, then write policies for all
-four operations. Both halves are required.
+[`db/policies.sql`](db/policies.sql) is the whole fix — one file, added on
+`fixed` and absent on `broken`. It enables RLS, then writes policies for all
+four operations. Both halves are required. See the
+[Supabase RLS guide](https://supabase.com/docs/guides/database/postgres/row-level-security)
+and the
+[PostgreSQL 17 row security docs](https://www.postgresql.org/docs/17/ddl-rowsecurity.html).
 
 The two mistakes worth knowing about:
 
@@ -99,9 +120,10 @@ checks the door is locked cannot tell you the key still works.
 ## What this is
 
 A minimal app written to reproduce the pattern that no-code and AI app builders
-ship by default. It is not an export from any particular tool, and it is not a
-security audit of one. It is the smallest complete example of the bug, so that
-the fix can be demonstrated rather than described.
+ship by default, using synthetic data throughout. It is not an export from any
+particular tool, and it is not a security audit of one. It is the smallest
+complete example of the bug, so that the fix can be demonstrated rather than
+described.
 
 MIT licensed. Copy the policies, copy the test, keep the test in your repo so
 the bug cannot come back quietly.

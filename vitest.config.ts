@@ -6,6 +6,7 @@ export default defineConfig({
     // PGlite boots a WebAssembly Postgres; give it room on a cold CI runner.
     testTimeout: 60_000,
     hookTimeout: 60_000,
-    reporters: ['verbose'],
+    reporters: ['verbose', 'json'],
+    outputFile: { json: './vitest-report.json' },
   },
 })

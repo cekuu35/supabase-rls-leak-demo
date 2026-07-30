@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "A reproducible Supabase row-level-security data leak, and the two-file fix, with the same test red on one branch and green on the other.",
+  "description": "A reproducible Supabase row-level-security data leak and its one-file fix, with the same test suite red on one branch and green on the other.",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
@@ -12,17 +12,17 @@
     "check": "npm run lint && npm run typecheck && npm run test"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.2.17"
+    "@electric-sql/pglite": "0.5.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.17.0",
-    "@types/node": "^22.10.2",
-    "eslint": "^9.17.0",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.18.1",
-    "vitest": "^2.1.8"
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.1",
+    "eslint": "10.8.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.65.0",
+    "vitest": "4.1.10"
   },
   "engines": {
-    "node": ">=20"
+    "node": "^20.19.0 || ^22.13.0 || >=24"
   }
 }
