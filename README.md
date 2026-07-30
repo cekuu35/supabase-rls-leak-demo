@@ -1,28 +1,29 @@
-# Your Supabase app is probably leaking rows between users
+# Supabase/Postgres RLS isolation failure: a minimal reproducible example
 
-This repository reproduces a common data leak in AI-generated Supabase apps,
-and fixes it. Two branches, one file of difference, the same test suite on both.
+This repository is a synthetic minimal reproduction of a missing-RLS
+configuration in a PostgreSQL schema designed for Supabase-style auth. The
+branches use the same tests and differ only by `db/policies.sql`. It is not an
+export from, or evidence about, any named AI/no-code tool.
 
 ```bash
 npm ci
-npm test
+npm run test:ci
 ```
 
-No Docker, no Supabase project, no credentials. The tests run a real Postgres
-([PGlite](https://pglite.dev/docs/about), Postgres compiled to WebAssembly), so
-the row-level security exercised here is the same row-level security your
-project runs.
+No Docker, Supabase project, or credentials are required. The tests run
+PostgreSQL in [PGlite](https://pglite.dev/docs/about) and exercise
+[database-level row-security](https://www.postgresql.org/docs/17/ddl-rowsecurity.html)
+behavior locally. They do not emulate Supabase Auth, PostgREST, Data API
+exposure, network controls, or production configuration; the result proves
+only this fixture's database-level behavior.
 
-[PGlite](https://pglite.dev/docs/about) exercises PostgreSQL
-[row security](https://www.postgresql.org/docs/17/ddl-rowsecurity.html)
-semantics locally, but it does not emulate Supabase Auth, PostgREST, network
-exposure, or production configuration. It reproduces the database-level rule
-that decides which rows a query returns — not the service in front of it.
+| branch   | `db/policies.sql` | raw Vitest result  |
+| -------- | ----------------- | ------------------- |
+| `broken` | absent            | 4 failed, 1 passed  |
+| `fixed`  | present           | 5 passed            |
 
-| branch  | `db/policies.sql` | `npm test`                |
-| ------- | ----------------- | ------------------------- |
-| `broken` | absent            | 4 failed, 1 passed        |
-| `fixed`  | present           | 5 passed                  |
+`npm run test:ci` verifies that the exact expected signature occurs on each
+branch. The raw `npm test` command exits non-zero on `broken`.
 
 On `broken`:
 
@@ -33,37 +34,36 @@ On `broken`:
 ```
 
 That note is synthetic seed data, not a real card. The suite plants two fake
-rows — one per test user — so the leak has something recognizable to expose.
+rows — one per test user — so the isolation failure has recognizable output.
 
-## The symptom
+## The reproduced symptom
 
-Everything works. Signup works, login works, each user sees their own data in
-the UI. Nothing looks wrong, because the frontend only ever asks for the
-current user's rows — so the current user's rows are all you ever see.
+In this synthetic fixture, an authenticated role has table privileges while
+the table lacks the policy file, so cross-user rows are returned. A production
+UI might still appear correct if it requests only the current user's rows;
+this repository does not model signup, login, a UI, or the Supabase network
+path.
 
-The leak is not in the UI. It is in what the API will hand over when someone
-asks it a slightly different question.
+## Three configurations worth checking
 
-## Three things it usually is
+1. **RLS was never enabled on the table.** If RLS is disabled, a role with the
+   required table privileges is not filtered by RLS. Actual exposure still
+   depends on grants, role attributes, and API/schema reachability.
 
-1. **RLS was never enabled on the table.** Grants exist, the app works, and
-   every authenticated request can read every row. Grants control which
-   *operations* a role may attempt. They say nothing about which *rows*.
+2. **RLS is enabled but no policy matches.** PostgreSQL defaults to deny. That
+   can prevent exposure but can also break legitimate access; detection time
+   depends on monitoring and exercised paths.
 
-2. **RLS is enabled but no policy matches.** Loud and harmless — everything
-   returns empty and you find out in about four minutes.
-
-3. **A policy exists but RLS was never enabled.** The dangerous one. The
-   dashboard lists your policy, so the table looks protected. It is not
-   enforced. Nothing about this looks wrong from anywhere in the product.
-
-Case 3 is the one that ships.
+3. **A policy exists but RLS was never enabled.** Those policies are not
+   enforced. This can be overlooked because policy metadata exists; verify
+   grants and API/schema exposure before calling it an externally reachable
+   leak.
 
 Disabling (or never enabling) RLS removes the row filter, but that is only half
 the exposure story: whether those rows actually reach a caller still depends on
-table grants and on whether the table is reachable through your API and exposed
+table grants and on whether the table is reachable through an API and exposed
 schema. RLS is the row-level gate; grants and API/schema exposure are the gates
-around it. This demo pins down the row-level gate.
+around it. This demo pins down the row-level gate in its own fixture.
 
 ## The query that tells you which
 
@@ -82,48 +82,57 @@ group by c.relname, c.relrowsecurity
 order by c.relrowsecurity, c.relname;
 ```
 
-Any row with `rls_enabled = false` is a table where Postgres applies no row
-filter to non-owner roles. Whether that turns into a leak depends on the grants
-and API exposure above — but `policy_count > 0` alongside `rls_enabled = false`
-is case 3, and worth treating as a leak until proven otherwise.
+Any row with `rls_enabled = false` is a table where PostgreSQL applies no RLS
+row filter to roles subject to RLS. Investigate grants, role attributes, and
+API/schema exposure; `policy_count > 0` does not by itself prove an externally
+exploitable leak.
 
 ## The fix
 
-[`db/policies.sql`](db/policies.sql) is the whole fix — one file, added on
-`fixed` and absent on `broken`. It enables RLS, then writes policies for all
-four operations. Both halves are required. See the
+In this fixture, the complete branch difference is
+[`db/policies.sql`](db/policies.sql): one file, added on `fixed` and absent on
+`broken`. It enables RLS and adds policies for four operations. These policies
+fit this synthetic schema and must be adapted and tested against a real
+application's authorization model. See the
 [Supabase RLS guide](https://supabase.com/docs/guides/database/postgres/row-level-security)
 and the
 [PostgreSQL 17 row security docs](https://www.postgresql.org/docs/17/ddl-rowsecurity.html).
 
-The two mistakes worth knowing about:
+Two policy-testing details worth knowing:
 
-- **`USING` without `WITH CHECK`.** Reads get locked down, writes stay open. A
-  user can still insert a row carrying someone else's `user_id`, or update
-  their own row to hand it to another account. The `insert` and `update` tests
-  here cover exactly this.
-- **Testing as the table owner.** The owner bypasses RLS by design, so a test
-  written as the owner passes on a completely unprotected table.
-  [`src/db.ts`](src/db.ts) drops to the `authenticated` role before every query
-  for this reason.
+- **Incomplete write-policy checks.** For `INSERT` and `UPDATE` policies,
+  define and test the appropriate `WITH CHECK` conditions. Exact behavior
+  depends on the command and the complete set of policies; this demo uses
+  explicit policies per operation.
+- **Testing as a role that bypasses RLS.** Table owners normally bypass RLS
+  unless `FORCE ROW LEVEL SECURITY` is used; superusers and `BYPASSRLS` roles
+  bypass it. This fixture switches to its `authenticated` role so the
+  assertions exercise the intended policy path.
 
 ## About the test
 
 [`tests/isolation.test.ts`](tests/isolation.test.ts) is byte-for-byte identical
-on both branches. It signs in as user B, asks for everything in `public.notes`,
-and asserts that nothing owned by user A comes back.
+on both branches. The harness sets a synthetic JWT subject claim, switches to
+its `authenticated` database role, asks for everything in `public.notes`, and
+asserts that nothing owned by user A comes back. It does not perform a real
+Supabase Auth sign-in.
 
 It also asserts that user B *can* still read their own row — otherwise
-`revoke all` would pass the suite while breaking the product. A test that only
+`revoke all` would pass the suite while breaking the fixture. A test that only
 checks the door is locked cannot tell you the key still works.
 
 ## What this is
 
-A minimal app written to reproduce the pattern that no-code and AI app builders
-ship by default, using synthetic data throughout. It is not an export from any
-particular tool, and it is not a security audit of one. It is the smallest
-complete example of the bug, so that the fix can be demonstrated rather than
-described.
+A synthetic minimal reproduction of one missing-RLS configuration. It is not
+an export from, or audit of, any AI/no-code builder and makes no claim about
+those tools' defaults or prevalence.
 
-MIT licensed. Copy the policies, copy the test, keep the test in your repo so
-the bug cannot come back quietly.
+MIT licensed. Adapt the example to your schema and authorization model, then
+retain regression tests that cover your actual roles and access paths.
+
+## Provenance note
+
+This repository is AI-assisted and human-reviewed. Some earlier commit
+trailers contain a specific model label inserted by an automated tool; that
+label was not independently verified and should not be treated as model
+attestation.

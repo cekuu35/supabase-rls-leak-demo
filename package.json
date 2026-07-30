@@ -6,6 +6,7 @@
   "description": "A reproducible Supabase row-level-security data leak and its one-file fix, with the same test suite red on one branch and green on the other.",
   "scripts": {
     "test": "vitest run",
+    "test:ci": "node scripts/verify-ci-tests.mjs",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
