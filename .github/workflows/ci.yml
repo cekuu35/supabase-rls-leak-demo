@@ -1,8 +1,7 @@
 name: ci
 
-# Runs on both branches. The point of this workflow is that the run URLs are
-# public and permanent: one shows the suite failing on `broken`, the other
-# shows the identical suite passing on `fixed`.
+# Both branches are green only when their exact expected evidence is observed:
+# `broken` must produce 4 failed / 1 passed, while `fixed` must produce 5 passed.
 on:
   push:
     branches: [broken, fixed, main]
@@ -34,4 +33,5 @@ jobs:
 
       - run: npm run typecheck
 
-      - run: npm run test
+      - name: Verify exact vulnerable or fixed test signature
+        run: npm run test:ci
