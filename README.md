@@ -1,5 +1,9 @@
 # Supabase/Postgres RLS isolation failure: a minimal reproducible example
 
+[![CI](https://github.com/cekuu35/supabase-rls-leak-demo/actions/workflows/ci.yml/badge.svg?branch=fixed)](https://github.com/cekuu35/supabase-rls-leak-demo/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/cekuu35/supabase-rls-leak-demo?label=stable%20release)](https://github.com/cekuu35/supabase-rls-leak-demo/releases/tag/v1.0.0)
+[![Isolation tests](https://img.shields.io/badge/isolation%20tests-5%20passing-15803d)](https://github.com/cekuu35/supabase-rls-leak-demo/actions/workflows/ci.yml)
+
 ![Supabase RLS negative-test matrix — free, copyable and evidence-first](https://github.com/cekuu35/supabase-rls-leak-demo/releases/download/v1.0.0/rls-matrix-social-card.png)
 
 This repository is a synthetic minimal reproduction of a missing-RLS
