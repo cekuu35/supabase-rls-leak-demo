@@ -19,6 +19,9 @@ only this fixture's database-level behavior.
 
 For a practical cross-user and cross-tenant test matrix, read
 [How to test Supabase RLS policies before launch](https://cenkkurtoglu.com/blog/how-to-test-supabase-rls-policies?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=testing_guide).
+You can also copy the repository's
+[ready-to-adapt negative-test matrix](RLS_TEST_MATRIX.md) into your own issue,
+pull request or test plan.
 
 | branch   | `db/policies.sql` | raw Vitest result  |
 | -------- | ----------------- | ------------------- |
