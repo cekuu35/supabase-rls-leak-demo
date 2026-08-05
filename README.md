@@ -149,6 +149,11 @@ prioritized findings with reproduction notes and remediation guidance. Do not
 send production passwords or service-role keys before the project scope and
 safe access method are agreed on Upwork.
 
+Before ordering, you can inspect the
+[synthetic sample audit report](SAMPLE_AUDIT_REPORT.md) to see the structure,
+evidence style, remediation notes and explicit scope limitations. It is not a
+client report and contains no real customer or production data.
+
 If you are preparing a Next.js + Supabase release, I also sell a broader [60-check launch checklist with real PDF preview pages](https://cekuu35.github.io/nextjs-supabase-checklist-preview/?utm_source=github&utm_medium=readme&utm_campaign=launch_checklist&utm_content=rls_demo_readme). The complete 8-page PDF is a one-time [$12 purchase on Gumroad](https://cengokurtoglu.gumroad.com/l/xjnmxt?wanted=true&utm_source=github&utm_medium=readme&utm_campaign=launch_checklist&utm_content=rls_demo_readme).
 
 It is a review aid, not a security, compliance, uptime, or launch-outcome guarantee.
