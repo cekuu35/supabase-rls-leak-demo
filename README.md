@@ -1,5 +1,7 @@
 # Supabase/Postgres RLS isolation failure: a minimal reproducible example
 
+![Supabase RLS negative-test matrix — free, copyable and evidence-first](https://github.com/cekuu35/supabase-rls-leak-demo/releases/download/v1.0.0/rls-matrix-social-card.png)
+
 This repository is a synthetic minimal reproduction of a missing-RLS
 configuration in a PostgreSQL schema designed for Supabase-style auth. The
 branches use the same tests and differ only by `db/policies.sql`. It is not an
