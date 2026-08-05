@@ -17,6 +17,9 @@ behavior locally. They do not emulate Supabase Auth, PostgREST, Data API
 exposure, network controls, or production configuration; the result proves
 only this fixture's database-level behavior.
 
+For a practical cross-user and cross-tenant test matrix, read
+[How to test Supabase RLS policies before launch](https://cenkkurtoglu.com/blog/how-to-test-supabase-rls-policies?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=testing_guide).
+
 | branch   | `db/policies.sql` | raw Vitest result  |
 | -------- | ----------------- | ------------------- |
 | `broken` | absent            | 4 failed, 1 passed  |

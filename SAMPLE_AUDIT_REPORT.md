@@ -118,3 +118,6 @@ in the agreed scope:
 
 For the live service scope, see the
 [Supabase RLS security audit](https://cenkkurtoglu.com/supabase-rls-security-audit?utm_source=github&utm_medium=sample_report&utm_campaign=rls_audit).
+
+For a reusable negative-test matrix before launch, read
+[How to test Supabase RLS policies](https://cenkkurtoglu.com/blog/how-to-test-supabase-rls-policies?utm_source=github&utm_medium=sample_report&utm_campaign=rls_audit&utm_content=testing_guide).
