@@ -25,6 +25,12 @@ You can also copy the repository's
 [ready-to-adapt negative-test matrix](RLS_TEST_MATRIX.md) into your own issue,
 pull request or test plan.
 
+If you already have a failing policy, unexpected permission error or suspected
+tenant-boundary issue, see the
+[Supabase database debugging service](https://cenkkurtoglu.com/supabase-database-debugging?utm_source=github&utm_medium=readme&utm_campaign=supabase_debugging&utm_content=top_cta).
+The service starts from a reproducible case and keeps contracting and payment
+on Upwork; do not send production secrets or customer data in an inquiry.
+
 | branch   | `db/policies.sql` | raw Vitest result  |
 | -------- | ----------------- | ------------------- |
 | `broken` | absent            | 4 failed, 1 passed  |
