@@ -29,6 +29,13 @@ You can also copy the repository's
 [ready-to-adapt negative-test matrix](RLS_TEST_MATRIX.md) into your own issue,
 pull request or test plan.
 
+For a broader self-run review, the
+[Supabase RLS Audit Kit](https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=github&utm_medium=readme&utm_campaign=rls_kit_launch&utm_content=rls_demo_top)
+is a $29 one-time ZIP with seven commented SQL audits, a 60-check workflow, an
+optional two-user staging harness, and reporting/remediation templates. It is
+for projects you own or are authorized to test; it is not a managed penetration
+test, certification, or guarantee that an application is secure.
+
 If you already have a failing policy, unexpected permission error or suspected
 tenant-boundary issue, see the
 [Supabase database debugging service](https://cenkkurtoglu.com/supabase-database-debugging?utm_source=github&utm_medium=readme&utm_campaign=supabase_debugging&utm_content=top_cta).
