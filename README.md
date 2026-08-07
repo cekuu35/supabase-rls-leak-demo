@@ -194,6 +194,6 @@ client report and contains no real customer or production data.
 
 Not ready to order anything? The ten checks I run before shipping a
 Next.js + Supabase app are a
-[free 2-page PDF ($0 checkout)](https://cengokurtoglu.gumroad.com/l/nextjs-supabase-10-checks-free?utm_source=github&utm_medium=readme&utm_campaign=free_checklist).
+[2-page PDF, $1](https://cengokurtoglu.gumroad.com/l/nextjs-supabase-10-checks-free?utm_source=github&utm_medium=readme&utm_campaign=launch_checklist).
 It is a review aid, not a security, compliance, uptime, or launch-outcome
 guarantee.
