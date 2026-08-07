@@ -36,23 +36,17 @@ you needed, you are done and you have spent nothing.
 
 What none of those can check is whether a policy that *exists* is actually
 correct — a permissive policy silently cancelling a restrictive one, a
-membership join that is not isolated, or a service-role key reachable from a
-client path. That is the work I do, and it is deliberately the only thing I
-sell here:
+missing membership join that is not isolated, or a service-role key reachable from a
+client path. For a fixed, small first step, I offer one done-for-you review:
 
-**[Supabase RLS security audit — from $299, 2-day delivery](https://www.upwork.com/services/product/2083862107074689176?utm_source=github&utm_medium=readme&utm_campaign=rls_audit)**
-Every table and policy enumerated, severity-ranked findings with reproducible
-proof, and a remediation plan with the SQL to apply. Contracting and payment
-stay on Upwork. Read-only access or a sanitized schema dump is enough — never
-send production secrets or service-role keys. It returns prioritized findings
-and remediation guidance; it is not a penetration test, certification, or a
-guarantee that an application is secure.
+**[3-table Supabase RLS review — $15.20 with LAUNCH20; $7.60 deposit](https://cengokurtoglu.gumroad.com/l/supabase-rls-3-table-review/LAUNCH20?utm_source=github&utm_medium=readme&utm_campaign=rls_review&utm_content=demo_top)**
 
-Prefer to run it yourself? The
-[Supabase RLS Audit Kit](https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=github&utm_medium=readme&utm_campaign=rls_kit_launch&utm_content=rls_demo_top)
-is a $29 one-time ZIP with seven commented SQL audits, a 60-check workflow, an
-optional two-user staging harness, and reporting/remediation templates. Same
-scope limits apply: for projects you own or are authorized to test.
+Within 24 hours I review three tables and return a policy matrix, two-user
+isolation tests, severity-ranked findings, and copy-ready SQL recommendations.
+The remaining $7.60 is due after completion. Five launch slots are available.
+Read-only access or a sanitized schema dump is enough — never send production
+secrets or service-role keys. This is a focused configuration review, not a
+penetration test, certification, or guarantee that an application is secure.
 
 | branch   | `db/policies.sql` | raw Vitest result  |
 | -------- | ----------------- | ------------------- |
@@ -179,14 +173,12 @@ attestation.
 This repository deliberately covers one synthetic, database-level RLS failure mode; it is not a complete Supabase or application security audit.
 
 If you want the same evidence-first approach applied to your own Next.js +
-Supabase authorization model, the scope is described on the
-[audit service page](https://cenkkurtoglu.com/supabase-rls-security-audit?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=hands_on_review)
-and ordering happens through
-[Upwork](https://www.upwork.com/services/product/2083862107074689176?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=footer).
-The service tests cross-user and cross-tenant access paths and returns
-prioritized findings with reproduction notes and remediation guidance. Do not
-send production passwords or service-role keys before the project scope and
-safe access method are agreed on Upwork.
+Supabase authorization model, order the
+[3-table RLS review on Gumroad](https://cengokurtoglu.gumroad.com/l/supabase-rls-3-table-review/LAUNCH20?utm_source=github&utm_medium=readme&utm_campaign=rls_review&utm_content=footer).
+The review tests cross-user and cross-tenant access paths for three tables and
+returns prioritized findings, reproduction notes, and copy-ready SQL guidance.
+Do not send production passwords or service-role keys; use read-only access or
+a sanitized schema dump.
 
 Before ordering, you can inspect the
 [synthetic sample audit report](SAMPLE_AUDIT_REPORT.md) to see the structure,
