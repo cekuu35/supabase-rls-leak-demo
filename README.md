@@ -37,10 +37,13 @@ for projects you own or are authorized to test; it is not a managed penetration
 test, certification, or guarantee that an application is secure.
 
 If you already have a failing policy, unexpected permission error or suspected
-tenant-boundary issue, see the
-[Supabase database debugging service](https://cenkkurtoglu.com/supabase-database-debugging?utm_source=github&utm_medium=readme&utm_campaign=supabase_debugging&utm_content=top_cta).
-The service starts from a reproducible case and keeps contracting and payment
-on Upwork; do not send production secrets or customer data in an inquiry.
+tenant-boundary issue, I offer a
+[24-hour human review of three sensitive Supabase tables](https://cengokurtoglu.gumroad.com/l/supabase-rls-3-table-review/LAUNCH20?utm_source=github&utm_medium=readme&utm_campaign=rls_review&utm_content=demo_top_cta).
+The launch price is **$15.20 total**, with a **$7.60 deposit today**. Send only
+sanitized schema and policy SQL—never production secrets, service-role keys or
+customer data. The review returns risk-ranked findings, reproducible checks and
+practical policy-fix recommendations; it is not a penetration test or security
+guarantee.
 
 | branch   | `db/policies.sql` | raw Vitest result  |
 | -------- | ----------------- | ------------------- |
