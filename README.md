@@ -34,6 +34,30 @@ catches RLS switched off and RLS switched on with no policy behind it, and the
 query further down this page tells you the same thing directly. If that is all
 you needed, you are done and you have spent nothing.
 
+### Free: [`audit/rls-audit.sql`](audit/rls-audit.sql)
+
+Nine read-only queries against the system catalogs, MIT, nothing to install
+and nothing to send anywhere. Every one is `SELECT`-only, so it is safe to
+paste into the Supabase SQL editor on production:
+
+1. RLS coverage per table
+2. Every policy in full, **with the roles it actually applies to** — an empty
+   roles array means no `TO` clause, so the policy is evaluated for `anon` too
+3. The effective write check, and which columns its predicate never mentions
+4. What `anon` and `authenticated` can `INSERT`, `UPDATE` and `DELETE`
+5. `SECURITY DEFINER` functions the client can call, and whether `search_path`
+   is pinned
+6. Views that run as their owner rather than the caller
+7. Owner bypass, `FORCE ROW LEVEL SECURITY`, and roles holding `BYPASSRLS`
+8. Policies calling `auth.uid()` unwrapped, which re-evaluates per row
+9. A `BEGIN … ROLLBACK` harness that sets `request.jwt.claims` the way the API
+   does, so you can query as a real user without persisting anything
+
+Query 9 is the one people most often get wrong on their own: `set role
+authenticated` by itself leaves `request.jwt.claims` unset, `auth.uid()`
+returns NULL, every ownership policy filters everything away, and you conclude
+a correct policy is broken.
+
 What none of those can check is whether a policy that *exists* is actually
 correct — a permissive policy silently cancelling a restrictive one, a
 membership join that is not isolated, or a service-role key reachable from a
