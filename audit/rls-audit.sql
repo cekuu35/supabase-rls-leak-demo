@@ -127,8 +127,8 @@ order by grantee, table_name, privilege_type;
 select n.nspname                                             as schema,
        p.proname                                             as function_name,
        pg_get_userbyid(p.proowner)                           as owner,
-       has_function_privilege('anon',          p.oid, 'EXECUTE') as anon_can_call,
-       has_function_privilege('authenticated', p.oid, 'EXECUTE') as auth_can_call,
+       has_function_privilege(to_regrole('anon')::oid,          p.oid, 'EXECUTE') as anon_can_call,
+       has_function_privilege(to_regrole('authenticated')::oid, p.oid, 'EXECUTE') as auth_can_call,
        p.proconfig                                           as search_path_pinned
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
@@ -158,8 +158,8 @@ select c.relname                            as view_name,
                  from pg_options_to_table(c.reloptions)
                  where option_name = 'security_invoker'), 'false')
                                             as security_invoker,
-       has_table_privilege('anon',          c.oid, 'SELECT') as anon_select,
-       has_table_privilege('authenticated', c.oid, 'SELECT') as auth_select
+       has_table_privilege(to_regrole('anon')::oid,          c.oid, 'SELECT') as anon_select,
+       has_table_privilege(to_regrole('authenticated')::oid, c.oid, 'SELECT') as auth_select
 from pg_class c
 join pg_namespace n on n.oid = c.relnamespace
 where n.nspname = 'public'
@@ -204,8 +204,8 @@ from pg_policy p
 join pg_class c     on c.oid = p.polrelid
 join pg_namespace n on n.oid = c.relnamespace
 where n.nspname = 'public'
-  and pg_get_expr(p.polqual, p.polrelid) ~ 'auth\.(uid|jwt|role)\(\)'
-  and pg_get_expr(p.polqual, p.polrelid) !~ '\(\s*select\s+auth\.'
+  and pg_get_expr(p.polqual, p.polrelid) ~* 'auth\.(uid|jwt|role)\(\)'
+  and pg_get_expr(p.polqual, p.polrelid) !~* '\(\s*select\s+auth\.'
 order by 1, 2;
 
 
