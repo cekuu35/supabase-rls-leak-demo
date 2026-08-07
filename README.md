@@ -29,21 +29,30 @@ You can also copy the repository's
 [ready-to-adapt negative-test matrix](RLS_TEST_MATRIX.md) into your own issue,
 pull request or test plan.
 
-For a broader self-run review, the
+Run the free checks first. Supabase ships a database linter that already
+catches RLS switched off and RLS switched on with no policy behind it, and the
+query further down this page tells you the same thing directly. If that is all
+you needed, you are done and you have spent nothing.
+
+What none of those can check is whether a policy that *exists* is actually
+correct — a permissive policy silently cancelling a restrictive one, a
+membership join that is not isolated, or a service-role key reachable from a
+client path. That is the work I do, and it is deliberately the only thing I
+sell here:
+
+**[Supabase RLS security audit — from $299, 2-day delivery](https://www.upwork.com/services/product/2083862107074689176?utm_source=github&utm_medium=readme&utm_campaign=rls_audit)**
+Every table and policy enumerated, severity-ranked findings with reproducible
+proof, and a remediation plan with the SQL to apply. Contracting and payment
+stay on Upwork. Read-only access or a sanitized schema dump is enough — never
+send production secrets or service-role keys. It returns prioritized findings
+and remediation guidance; it is not a penetration test, certification, or a
+guarantee that an application is secure.
+
+Prefer to run it yourself? The
 [Supabase RLS Audit Kit](https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=github&utm_medium=readme&utm_campaign=rls_kit_launch&utm_content=rls_demo_top)
 is a $29 one-time ZIP with seven commented SQL audits, a 60-check workflow, an
-optional two-user staging harness, and reporting/remediation templates. It is
-for projects you own or are authorized to test; it is not a managed penetration
-test, certification, or guarantee that an application is secure.
-
-If you already have a failing policy, unexpected permission error or suspected
-tenant-boundary issue, I offer a
-[24-hour human review of three sensitive Supabase tables](https://cengokurtoglu.gumroad.com/l/supabase-rls-3-table-review/LAUNCH20?utm_source=github&utm_medium=readme&utm_campaign=rls_review&utm_content=demo_top_cta).
-The launch price is **$15.20 total**, with a **$7.60 deposit today**. Send only
-sanitized schema and policy SQL—never production secrets, service-role keys or
-customer data. The review returns risk-ranked findings, reproducible checks and
-practical policy-fix recommendations; it is not a penetration test or security
-guarantee.
+optional two-user staging harness, and reporting/remediation templates. Same
+scope limits apply: for projects you own or are authorized to test.
 
 | branch   | `db/policies.sql` | raw Vitest result  |
 | -------- | ----------------- | ------------------- |
@@ -170,8 +179,10 @@ attestation.
 This repository deliberately covers one synthetic, database-level RLS failure mode; it is not a complete Supabase or application security audit.
 
 If you want the same evidence-first approach applied to your own Next.js +
-Supabase authorization model, review the scope of my
-[fixed-price Supabase RLS audit](https://cenkkurtoglu.com/supabase-rls-security-audit?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=hands_on_review).
+Supabase authorization model, the scope is described on the
+[audit service page](https://cenkkurtoglu.com/supabase-rls-security-audit?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=hands_on_review)
+and ordering happens through
+[Upwork](https://www.upwork.com/services/product/2083862107074689176?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=footer).
 The service tests cross-user and cross-tenant access paths and returns
 prioritized findings with reproduction notes and remediation guidance. Do not
 send production passwords or service-role keys before the project scope and
@@ -182,6 +193,8 @@ Before ordering, you can inspect the
 evidence style, remediation notes and explicit scope limitations. It is not a
 client report and contains no real customer or production data.
 
-If you are preparing a Next.js + Supabase release, I also sell a broader [60-check launch checklist with real PDF preview pages](https://cekuu35.github.io/nextjs-supabase-checklist-preview/?utm_source=github&utm_medium=readme&utm_campaign=launch_checklist&utm_content=rls_demo_readme). The complete 8-page PDF is a one-time [$12 purchase on Gumroad](https://cengokurtoglu.gumroad.com/l/xjnmxt?wanted=true&utm_source=github&utm_medium=readme&utm_campaign=launch_checklist&utm_content=rls_demo_readme).
-
-It is a review aid, not a security, compliance, uptime, or launch-outcome guarantee.
+Not ready to order anything? The ten checks I run before shipping a
+Next.js + Supabase app are a
+[free PDF, no email wall](https://cengokurtoglu.gumroad.com/l/nextjs-supabase-10-checks-free?utm_source=github&utm_medium=readme&utm_campaign=free_checklist).
+It is a review aid, not a security, compliance, uptime, or launch-outcome
+guarantee.
