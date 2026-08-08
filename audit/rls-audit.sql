@@ -123,6 +123,17 @@ order by grantee, table_name, privilege_type;
 -- A null search_path_pinned is the second half of the hole: without
 -- `set search_path = ...` the function resolves unqualified names against
 -- the caller's search_path.
+--
+-- Do not shortcut this with `proacl is null`. On Supabase that test gives a
+-- false negative: Supabase grants EXECUTE to anon and authenticated
+-- explicitly rather than leaning on the PUBLIC default, so proacl comes back
+-- populated on a function that anon can still call, for example
+--   {=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}
+-- and a null check reads that as "not exposed". has_function_privilege
+-- resolves the effective privilege - PUBLIC, explicit grants and role
+-- membership together - so it stays correct on both hosted and vanilla
+-- Postgres. Thanks to Ismail Sunni for reporting the false negative from a
+-- live project.
 -- ---------------------------------------------------------------------------
 select n.nspname                                             as schema,
        p.proname                                             as function_name,
