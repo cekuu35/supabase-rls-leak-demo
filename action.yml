@@ -1,0 +1,76 @@
+name: 'Supabase RLS Audit'
+description: 'Fail the build when a Postgres row-level-security policy is missing, applies to anon, or is bypassable. Read-only.'
+author: 'cekuu35'
+
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  database-url:
+    description: 'Postgres connection string. Use a read-only role and store it in a secret.'
+    required: true
+  schema:
+    description: 'Schema to audit.'
+    required: false
+    default: 'public'
+  fail-on:
+    description: 'error = fail the build on findings, warn = report only.'
+    required: false
+    default: 'error'
+
+outputs:
+  findings:
+    description: 'Number of findings.'
+    value: ${{ steps.audit.outputs.findings }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: audit
+      shell: bash
+      env:
+        PGURL: ${{ inputs.database-url }}
+        SCHEMA: ${{ inputs.schema }}
+        FAILON: ${{ inputs.fail-on }}
+      run: |
+        set -euo pipefail
+        command -v psql >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client; }
+
+        run_sql() { psql "$PGURL" -X -A -t -F '|' -v ON_ERROR_STOP=1 -c "$1"; }
+        N=0
+        echo "## Supabase RLS audit — schema \`$SCHEMA\`" >> "$GITHUB_STEP_SUMMARY"
+
+        echo "### Tables with row level security off" >> "$GITHUB_STEP_SUMMARY"
+        OUT=$(run_sql "select c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace
+                       where n.nspname='$SCHEMA' and c.relkind='r' and not c.relrowsecurity order by 1;")
+        if [ -n "$OUT" ]; then N=$((N+$(echo "$OUT"|wc -l))); echo "$OUT" | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY";
+        else echo "- none" >> "$GITHUB_STEP_SUMMARY"; fi
+
+        echo "### Policies with no TO clause (evaluated for anon too)" >> "$GITHUB_STEP_SUMMARY"
+        OUT=$(run_sql "select c.relname||' :: '||p.polname from pg_policy p
+                       join pg_class c on c.oid=p.polrelid join pg_namespace n on n.oid=c.relnamespace
+                       where n.nspname='$SCHEMA' and p.polroles='{0}'::oid[] order by 1;")
+        if [ -n "$OUT" ]; then N=$((N+$(echo "$OUT"|wc -l))); echo "$OUT" | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY";
+        else echo "- none" >> "$GITHUB_STEP_SUMMARY"; fi
+
+        echo "### Owner-rights views readable by anon" >> "$GITHUB_STEP_SUMMARY"
+        OUT=$(run_sql "select c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace
+                       where n.nspname='$SCHEMA' and c.relkind in ('v','m')
+                         and coalesce((select option_value from pg_options_to_table(c.reloptions)
+                                       where option_name='security_invoker'),'false')='false'
+                         and has_table_privilege(to_regrole('anon')::oid, c.oid, 'SELECT') order by 1;")
+        if [ -n "$OUT" ]; then N=$((N+$(echo "$OUT"|wc -l))); echo "$OUT" | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY";
+        else echo "- none" >> "$GITHUB_STEP_SUMMARY"; fi
+
+        echo "### SECURITY DEFINER functions anon can call" >> "$GITHUB_STEP_SUMMARY"
+        OUT=$(run_sql "select p.proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+                       where n.nspname='$SCHEMA' and p.prosecdef
+                         and has_function_privilege(to_regrole('anon')::oid, p.oid, 'EXECUTE') order by 1;")
+        if [ -n "$OUT" ]; then N=$((N+$(echo "$OUT"|wc -l))); echo "$OUT" | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY";
+        else echo "- none" >> "$GITHUB_STEP_SUMMARY"; fi
+
+        echo "findings=$N" >> "$GITHUB_OUTPUT"
+        echo "" >> "$GITHUB_STEP_SUMMARY"
+        echo "**$N finding(s).** Every query above is SELECT-only." >> "$GITHUB_STEP_SUMMARY"
+        if [ "$N" -gt 0 ] && [ "$FAILON" = "error" ]; then echo "::error::RLS audit found $N issue(s)"; exit 1; fi
