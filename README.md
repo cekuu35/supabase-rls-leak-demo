@@ -27,7 +27,9 @@ For a practical cross-user and cross-tenant test matrix, read
 [How to test Supabase RLS policies before launch](https://cenkkurtoglu.com/blog/how-to-test-supabase-rls-policies?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=testing_guide).
 You can also copy the repository's
 [ready-to-adapt negative-test matrix](RLS_TEST_MATRIX.md) into your own issue,
-pull request or test plan.
+pull request or test plan. For the specific misconfigurations that leak data
+even when RLS looks enabled in the dashboard, see
+[7 ways your Supabase app still leaks data with RLS enabled](https://cenkkurtoglu.com/blog/7-supabase-rls-leak-surfaces?utm_source=github&utm_medium=readme&utm_campaign=rls_kit_launch&utm_content=7_surfaces_link).
 
 Run the free checks first. Supabase ships a database linter that already
 catches RLS switched off and RLS switched on with no policy behind it, and the
