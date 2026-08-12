@@ -230,9 +230,9 @@ client report and contains no real customer or production data.
 
 Not ready to order anything? The ten checks I run before shipping a
 Next.js + Supabase app are a
-[2-page PDF, $1](https://cengokurtoglu.gumroad.com/l/nextjs-supabase-10-checks-free?utm_source=github&utm_medium=readme&utm_campaign=launch_checklist).
-It is a review aid, not a security, compliance, uptime, or launch-outcome
-guarantee.
+[free 2-page PDF](https://cengokurtoglu.gumroad.com/l/nextjs-supabase-10-checks-free?utm_source=github&utm_medium=readme&utm_campaign=launch_checklist)
+— name your own price, or just enter 0 to download it. It is a review aid, not
+a security, compliance, uptime, or launch-outcome guarantee.
 
 Built your Supabase app fast — by hand or with an AI coding tool — and want a
 go-live pass wider than this one RLS surface? The
