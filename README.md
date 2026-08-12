@@ -231,3 +231,11 @@ Next.js + Supabase app are a
 [2-page PDF, $1](https://cengokurtoglu.gumroad.com/l/nextjs-supabase-10-checks-free?utm_source=github&utm_medium=readme&utm_campaign=launch_checklist).
 It is a review aid, not a security, compliance, uptime, or launch-outcome
 guarantee.
+
+Built your Supabase app fast — by hand or with an AI coding tool — and want a
+go-live pass wider than this one RLS surface? The
+[Next.js + Supabase Launch Checklist](https://cengokurtoglu.gumroad.com/l/xjnmxt?utm_source=github&utm_medium=readme&utm_campaign=launch_checklist&utm_content=leak_demo_readme)
+is an 8-page PDF, $19, with 60 practical checks across secrets, RLS, auth,
+performance, SEO, reliability, monitoring, backups and environment setup. Like
+the others here, it is a review aid — not a security, compliance, or
+launch-outcome guarantee.
