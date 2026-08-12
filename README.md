@@ -239,3 +239,15 @@ is an 8-page PDF, $19, with 60 practical checks across secrets, RLS, auth,
 performance, SEO, reliability, monitoring, backups and environment setup. Like
 the others here, it is a review aid — not a security, compliance, or
 launch-outcome guarantee.
+
+---
+
+> "I built my AI assistant Victorio with Claude ... not having ANY idea about
+> the security aspects of this build. Then I got an email from Cenk ... I bought
+> Cenk's checklist, and with it Claude was able to plug all my security holes. I
+> am very thankful to Cenk — he is amazing, and I highly recommend all founders
+> who are not technical to talk to him."
+>
+> — **Stan Altshuller, Founder & CEO, [Acadia.im](https://www.acadia.im)** — on
+> the $19 checklist above, after a live anon-key leak in his AI-built Supabase
+> app was found and fixed through exactly this process.
