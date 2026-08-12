@@ -253,3 +253,5 @@ launch-outcome guarantee.
 > — **Stan Altshuller, Founder & CEO, [Acadia.im](https://www.acadia.im)** — on
 > the $19 checklist above, after a live anon-key leak in his AI-built Supabase
 > app was found and fixed through exactly this process.
+
+If this fixture (or the free checks above) helped you catch something, a ⭐ on the repo helps other developers find it.
