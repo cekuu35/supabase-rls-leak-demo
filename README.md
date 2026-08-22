@@ -60,6 +60,16 @@ authenticated` by itself leaves `request.jwt.claims` unset, `auth.uid()`
 returns NULL, every ownership policy filters everything away, and you conclude
 a correct policy is broken.
 
+### Free: [`audit/two-user-probe.sql`](audit/two-user-probe.sql)
+
+Query 9 proves you can act as a real user; this one automates the verdict.
+Point it at any table with a `user_id`, paste, run: it seeds a row as user A,
+probes read/update/delete/cross-user-insert as user B, prints PASS/FAIL per
+access path, and — every single run — plants a deliberate `USING (true)`
+policy on a scratch table to prove the probe itself would catch the leak it
+exists to find. Whole run is one transaction that rolls back; nothing persists,
+and any FAIL raises so CI (`psql -v ON_ERROR_STOP=1`) goes red automatically.
+
 What none of those can check is whether a policy that *exists* is actually
 correct — a permissive policy silently cancelling a restrictive one, a
 membership join that is not isolated, or a service-role key reachable from a
