@@ -1,4 +1,4 @@
-# Supabase/Postgres RLS isolation failure: a minimal reproducible example
+﻿# Supabase/Postgres RLS isolation failure: a minimal reproducible example
 
 [![CI](https://github.com/cekuu35/supabase-rls-leak-demo/actions/workflows/ci.yml/badge.svg?branch=fixed)](https://github.com/cekuu35/supabase-rls-leak-demo/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/cekuu35/supabase-rls-leak-demo?label=stable%20release)](https://github.com/cekuu35/supabase-rls-leak-demo/releases/tag/v1.0.0)
@@ -51,7 +51,7 @@ query further down this page tells you the same thing directly. If that is all
 you needed, you are done and you have spent nothing.
 
 **Or skip the SQL editor entirely:** paste your public repo into the
-[free 30-second RLS checker](https://cekuu35.github.io/supabase-rls-leak-demo/?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=free_checker)
+[free 30-second RLS checker](https://rls.cenkkurtoglu.com/?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=free_checker)
 — it scans your committed migrations and env files entirely in your own
 browser (public source only, no database access, nothing stored) and shows
 severity-ranked findings, each with its 30-second verify query.
@@ -255,15 +255,15 @@ schema and policy SQL, or an authorized staging or read-only setup.
 
 The same tiers are available directly by email (one line, repo URL + tier, human
 reply within one business day):
-[request the audit](https://cekuu35.github.io/supabase-rls-leak-demo/?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=audit_request#request)
+[request the audit](https://rls.cenkkurtoglu.com/?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=audit_request#request)
 — **RLS Spot Check $99** (every table × policy rated, committed-secret sweep,
 verify query per finding) or **Full RLS Audit $199** (adds grants & role exposure
 review, write-path simulation, remediation SQL per finding). Remediation
 itself is quoted separately from the report — no surprises. Sample report and
 methodology: on the
-[checker site](https://cekuu35.github.io/supabase-rls-leak-demo/sample-report.html?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=sample_report).
+[checker site](https://rls.cenkkurtoglu.com/sample-report.html?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=sample_report).
 Supabase freelancers and small agencies: there is a
-[partner program](https://cekuu35.github.io/supabase-rls-leak-demo/partners.html?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=partners)
+[partner program](https://rls.cenkkurtoglu.com/partners.html?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=partners)
 — 20% per referred audit, −30% wholesale for your own client work.
 
 Before ordering, you can inspect the
