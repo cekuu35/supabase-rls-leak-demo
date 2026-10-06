@@ -245,13 +245,15 @@ If you want the same evidence-first approach applied to your own Next.js +
 Supabase authorization model, the self-serve option is the
 [Supabase RLS Audit Kit](https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=github&utm_medium=readme&utm_campaign=rls_kit&utm_content=footer)
 at $29 — seven commented SQL audits you run yourself, so nothing leaves your
-database. If you would rather have it done, the
-[Supabase RLS Security Audit](https://www.upwork.com/services/product/2083862107074689176?utm_source=github&utm_medium=readme&utm_campaign=rls_audit&utm_content=footer)
-is fixed-price from $99 with 2-day delivery, covering cross-user and
-cross-tenant access paths across every table and policy and returning
-prioritized findings with reproduction notes and remediation guidance. Do not
-send production passwords, service-role keys or customer data; use sanitized
-schema and policy SQL, or an authorized staging or read-only setup.
+database. If you would rather have it done, two fixed-price tiers:
+the [RLS Spot Check](https://cengokurtoglu.gumroad.com/l/rls-spot-check?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=spot)
+($99 — every table × policy rated, committed-secret sweep, verify query per
+finding) and the [Full RLS Audit](https://cengokurtoglu.gumroad.com/l/syrpag?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=full)
+($199 — adds grants & role exposure review, write-path simulation, remediation
+SQL per finding), each delivered as a severity-ranked report within 48 hours.
+Card and USDT (TRC-20) both accepted. Do not send production passwords,
+service-role keys or customer data; use sanitized schema and policy SQL, or an
+authorized staging or read-only setup.
 
 The same tiers are available directly by email (one line, repo URL + tier, human
 reply within one business day):
