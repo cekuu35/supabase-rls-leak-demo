@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology, scope & privacy — RLS audits</title>
+<style>
+  :root { --ink:#0f172a; --mut:#55607a; --line:#e2e8f0; --bg:#f8fafc; --acc:#0e7490; }
+  * { box-sizing:border-box; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); margin:0; line-height:1.65; }
+  .wrap { max-width:820px; margin:0 auto; padding:24px 20px 64px; }
+  header nav { display:flex; gap:16px; justify-content:flex-end; font-size:14px; padding:8px 0; }
+  header nav a { color:var(--mut); text-decoration:none; }
+  h1 { font-size:28px; margin:8px 0 6px; }
+  h2 { font-size:20px; margin:28px 0 8px; }
+  .sub { color:var(--mut); font-size:15px; margin:0 0 20px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:22px; margin:14px 0; }
+  ul { padding-left:20px; }
+  li { margin:6px 0; }
+  code, pre { font-family:ui-monospace, monospace; font-size:13px; background:#f1f5f9; border-radius:6px; }
+  code { padding:1px 6px; }
+  pre { padding:12px; overflow:auto; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:10px 0; }
+  th, td { border:1px solid var(--line); padding:7px 10px; text-align:left; }
+  th { background:#f1f5f9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><nav>
+  <a href="index.html">← Free check</a>
+  <a href="sample-report.html">Sample report</a>
+  <a href="partners.html">Partners</a>
+</nav></header>
+
+<h1>Methodology, scope & privacy</h1>
+<p class="sub">What an audit is, what it reads, and the lines it never crosses.</p>
+
+<div class="card">
+<h2>The method</h2>
+<ul>
+  <li><b>Catalog pass:</b> every table × every policy, rated <i>missing / permissive / correct</i> — with the 30-second verify query for each non-clean row.</li>
+  <li><b>Secrets pass:</b> repo-wide sweep for committed <code>service_role</code> JWTs and <code>sb_secret_</code> keys. Rotating always comes before reporting.</li>
+  <li><b>Grants pass (full tier):</b> table grants, role attributes, and API/schema exposure — RLS is the row-level gate; grants are the gates around it.</li>
+  <li><b>Write-path simulation (full tier):</b> your schema runs on a local PGlite fixture; a two-user isolation suite proves which paths actually leak — the same runnable pattern as <a href="https://github.com/cekuu35/supabase-rls-leak-demo">the public demo</a>.</li>
+  <li><b>Report:</b> severity-ranked findings (Critical / High / Medium / Low), each with verify-SQL, the fix, and estimated fix-hours. Remediation quoted separately, from the report.</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Severity rubric</h2>
+<table>
+  <tr><th>Severity</th><th>Meaning</th></tr>
+  <tr><td><b>Critical</b></td><td>Exposed credentials or anything that bypasses RLS entirely — act immediately.</td></tr>
+  <tr><td><b>High</b></td><td>User data readable/writable by anonymous key holders.</td></tr>
+  <tr><td><b>Medium</b></td><td>Integrity loss among authenticated users.</td></tr>
+  <tr><td><b>Low</b></td><td>Public-read on data that appears intentionally public — flagged, not counted against you.</td></tr>
+</table>
+<p>A finding is never reported without the verify query that lets you confirm it independently. No claims without evidence.</p>
+</div>
+
+<div class="card">
+<h2>Scope — what an audit is not</h2>
+<ul>
+  <li>A surface scan of <b>public source</b> is exactly that: it can miss runtime configuration, edge functions, storage rules, and anything not in the repo.</li>
+  <li>An audit is not a penetration test and not a compliance certification.</li>
+  <li>Policy-count or <code>rls_enabled</code> signals alone never prove an externally exploitable leak — grants and exposure are always part of the verdict.</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Privacy commitments (non-negotiable)</h2>
+<ul>
+  <li><b>Public source only.</b> The free check runs in your browser and reads public GitHub files. Paid audits read what you choose to share — repo access you grant, or files you send.</li>
+  <li><b>Never your database.</b> No audit connects to your live Supabase project. Write-path simulation happens on a local fixture with synthetic data.</li>
+  <li><b>Never your secrets.</b> No service-role keys, no seed phrases, no credentials — if anyone asks you for those (including someone claiming to be me), it's not me.</li>
+  <li><b>Unproven claims go nowhere.</b> If I notice an issue in someone's public repo, the flow is: read public source, verify precisely, then one private, informative note to the owner. Nothing is published without proof and permission.</li>
+  <li><b>Your data isn't stored.</b> The free check keeps nothing. Audit correspondence stays in email until you ask otherwise.</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Who does this</h2>
+<p>Cenk Kurtoglu — engineer, audits Supabase RLS setups. Public method: <a href="https://github.com/cekuu35/supabase-rls-leak-demo">supabase-rls-leak-demo</a> · field notes on <a href="https://dev.to/cekuu35">dev.to/cekuu35</a>. One human, no subcontractors.</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Supabase RLS Check — 30-second scan of your public repo</title>
+<meta name="description" content="Paste a public GitHub repo URL. In ~30 seconds see whether your Supabase/Postgres RLS policies are open to the anon key. Public source only — no database access, no credentials, free.">
+<style>
+  :root { --ink:#0f172a; --mut:#55607a; --line:#e2e8f0; --bg:#f8fafc; --acc:#0e7490; --crit:#b91c1c; --high:#c2410c; --med:#a16207; --ok:#15803d; }
+  * { box-sizing:border-box; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); margin:0; line-height:1.6; }
+  .wrap { max-width:880px; margin:0 auto; padding:24px 20px 64px; }
+  header nav { display:flex; gap:16px; justify-content:flex-end; font-size:14px; padding:8px 0; }
+  header nav a { color:var(--mut); text-decoration:none; }
+  header nav a:hover { color:var(--acc); }
+  h1 { font-size:34px; line-height:1.15; margin:8px 0 12px; letter-spacing:-0.5px; }
+  .sub { color:var(--mut); font-size:17px; margin:0 0 24px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; margin:16px 0; }
+  .scanbox { display:flex; gap:10px; flex-wrap:wrap; }
+  .scanbox input { flex:1 1 320px; padding:13px 14px; font-size:16px; border:1px solid var(--line); border-radius:8px; }
+  .scanbox button { padding:13px 22px; font-size:16px; font-weight:600; background:var(--acc); color:#fff; border:0; border-radius:8px; cursor:pointer; }
+  .scanbox button:disabled { opacity:.6; cursor:wait; }
+  .fineprint { color:var(--mut); font-size:13px; margin-top:10px; }
+  .progress { color:var(--mut); font-size:14px; margin-top:10px; min-height:20px; }
+  .sev { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.5px; }
+  .sev.critical { background:#fee2e2; color:var(--crit); }
+  .sev.high { background:#ffedd5; color:var(--high); }
+  .sev.medium { background:#fef9c3; color:var(--med); }
+  .sev.clean { background:#dcfce7; color:var(--ok); }
+  .finding { border-left:3px solid var(--line); padding-left:14px; margin:18px 0; }
+  .finding.critical { border-color:var(--crit); }
+  .finding.high { border-color:var(--high); }
+  .finding.medium { border-color:var(--med); }
+  .finding h4 { margin:0 0 4px; font-size:15px; }
+  .finding .file { font-family:ui-monospace, monospace; font-size:12px; color:var(--mut); }
+  .finding p { margin:6px 0; font-size:14px; }
+  .finding code, pre { font-family:ui-monospace, monospace; font-size:12.5px; background:#f1f5f9; border-radius:6px; }
+  .finding code { padding:1px 6px; }
+  .finding pre { padding:10px 12px; overflow:auto; }
+  .cta { background:#ecfeff; border:1px solid #a5f3fc; border-radius:12px; padding:20px; margin-top:22px; }
+  .cta h3 { margin:0 0 8px; }
+  .btnrow { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+  .btn { display:inline-block; padding:12px 20px; border-radius:8px; font-weight:600; text-decoration:none; font-size:15px; }
+  .btn.primary { background:var(--acc); color:#fff; }
+  .btn.secondary { background:#fff; color:var(--acc); border:1px solid var(--acc); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin:18px 0; }
+  .grid .card { margin:0; }
+  .grid h3 { margin:0 0 6px; font-size:16px; }
+  .price { font-size:26px; font-weight:800; margin:4px 0; }
+  .price small { font-size:13px; color:var(--mut); font-weight:400; }
+  .grid ul { margin:10px 0 0; padding-left:18px; font-size:14px; color:var(--mut); }
+  .grid ul li { margin:4px 0; }
+  h2 { font-size:24px; margin:38px 0 10px; letter-spacing:-0.3px; }
+  footer { color:var(--mut); font-size:13px; border-top:1px solid var(--line); margin-top:48px; padding-top:18px; }
+  footer a { color:var(--mut); }
+  a.acc { color:var(--acc); }
+  .method-list { font-size:14.5px; color:var(--mut); padding-left:20px; }
+  .method-list li { margin:6px 0; }
+  details summary { cursor:pointer; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <nav>
+    <a href="sample-report.html">Sample report</a>
+    <a href="methodology.html">Methodology & privacy</a>
+    <a href="partners.html">Partners</a>
+    <a href="https://github.com/cekuu35/supabase-rls-leak-demo">GitHub</a>
+  </nav>
+</header>
+
+<h1>Is your Supabase app's row-level security actually on?</h1>
+<p class="sub">Paste your public GitHub repo. In ~30 seconds you'll see whether your RLS policies are open to the anon key, whether a service-role key is committed, and exactly what to do about it. Free, client-side, no signup.</p>
+
+<div class="card">
+  <div class="scanbox">
+    <input id="repoInput" type="text" placeholder="https://github.com/your-org/your-app" spellcheck="false" autocomplete="off">
+    <button id="scanBtn" onclick="runScan()">Scan public repo</button>
+  </div>
+  <div class="fineprint">
+    Reads public source only (migrations + env files), from your own browser. No database access, no credentials, nothing stored. Try it on a live example: <a class="acc" href="#" onclick="fillExample(); return false;">load a demo repo</a>.
+  </div>
+  <div class="progress" id="progress"></div>
+  <div id="results"></div>
+</div>
+
+<h2>What the scan checks</h2>
+<ul class="method-list">
+  <li><b>Committed secrets</b> — service_role JWTs and <code>sb_secret_</code> keys in env files (rotating them comes first, always).</li>
+  <li><b>Policies open to everyone</b> — <code>USING (true)</code> with <code>TO anon</code>, <code>TO public</code>, or no <code>TO</code> clause at all (the "the policy name says Users but it means anyone" trap).</li>
+  <li><b>Write-all policies</b> — <code>USING(true) WITH CHECK(true)</code> for authenticated, where any logged-in user can rewrite any row.</li>
+</ul>
+<p class="sub" style="font-size:14px;">What it doesn't check: live runtime configuration, private repos, edge functions, storage rules. This is a public-source surface scan — full audits go deeper. See <a class="acc" href="methodology.html">methodology</a>.</p>
+
+<h2>If something turns up</h2>
+<div class="grid">
+  <div class="card">
+    <h3>RLS Spot Check</h3>
+    <div class="price">$99 <small>fixed</small></div>
+    <ul>
+      <li>Every table × every policy, rated: missing / permissive / correct</li>
+      <li>Committed-secret sweep of the repo</li>
+      <li>30-second verify query per finding</li>
+      <li>Written report, 48h turnaround</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Full RLS Audit</h3>
+    <div class="price">$199 <small>fixed</small></div>
+    <ul>
+      <li>Everything in the Spot Check</li>
+      <li>Grants & role exposure review (the gates around RLS)</li>
+      <li>Write-path simulation on a fixture clone of your schema</li>
+      <li>Remediation SQL per finding + severity-ranked fix hours</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Remediation</h3>
+    <div class="price">quoted <small>after audit</small></div>
+    <ul>
+      <li>We implement the fixes from the audit</li>
+      <li>Regression tests so the hole can't reopen</li>
+      <li>Priced per the report — no surprises</li>
+    </ul>
+  </div>
+</div>
+
+<div class="cta">
+  <h3>Request an audit</h3>
+  <p style="font-size:15px; margin:6px 0 0;">Email one line — your repo URL and which tier — and you'll get a confirmation with scope and turnaround within one business day.</p>
+  <div class="btnrow">
+    <a id="requestAuditBtn" class="btn primary" href="#">Request an audit (email)</a>
+    <a class="btn secondary" href="https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=rls-site&utm_medium=landing&utm_campaign=audit_offers">DIY Audit Kit ($29, Gumroad)</a>
+  </div>
+</div>
+
+<h2>Why trust the method</h2>
+<ul class="method-list">
+  <li><a class="acc" href="sample-report.html">A real (anonymized) sample report</a> — findings from live production repos, verify-SQL included.</li>
+  <li><a class="acc" href="https://github.com/cekuu35/supabase-rls-leak-demo">A runnable proof</a> — this repo's test suite reproduces a missing-RLS leak locally in 60s (PGlite, no Docker).</li>
+  <li><a class="acc" href="https://dev.to/cekuu35/3-supabase-rls-leaks-i-found-in-production-apps-this-week-and-the-30-second-check-for-each-4pk0">Field notes</a> — three leaks found in production apps this week, each with its 30-second check.</li>
+  <li><a class="acc" href="methodology.html">Scope & privacy commitments</a> — public source only, never your database, no keys requested, ever.</li>
+</ul>
+
+<footer>
+  <b>Privacy, plainly:</b> this page runs entirely in your browser. The scan reads public GitHub files and nothing else; nothing you type is sent to a server or stored. Audit requests go by email to a human (Cenk) — see <a href="methodology.html">the full statement</a>. ·
+  <a href="partners.html">Partner program</a> for freelancers & agencies ·
+  MIT-licensed method · © 2026 Cenk Kurtoglu
+</footer>
+
+</div>
+<script src="rls-scanner.js"></script>
+<script>
+(function () {
+  // UTM capture — every lead arrives pre-tagged (see distribution/utm-scheme.md)
+  var qs = new URLSearchParams(location.search);
+  window.__utm = ["utm_source", "utm_medium", "utm_campaign", "utm_content"].map(function (k) {
+    return k + "=" + (qs.get(k) || "direct");
+  }).join("&");
+
+  var base = "mailto:cnkkurtoglu@gmail.com";
+  document.getElementById("requestAuditBtn").href = base +
+    "?subject=" + encodeURIComponent("RLS audit request") +
+    "&body=" + encodeURIComponent("Repo: \nTier (Spot Check $99 / Full Audit $199): \nAnything specific you're worried about: \n\n— sent from the RLS check page");
+
+  window.fillExample = function () {
+    document.getElementById("repoInput").value = "https://github.com/cekuu35/supabase-rls-leak-demo";
+  };
+
+  window.runScan = async function () {
+    var input = document.getElementById("repoInput").value.trim();
+    var btn = document.getElementById("scanBtn");
+    var prog = document.getElementById("progress");
+    var out = document.getElementById("results");
+    if (!input) { prog.textContent = "Paste a public GitHub repo URL first."; return; }
+    btn.disabled = true; btn.textContent = "Scanning…"; out.innerHTML = ""; prog.textContent = "Starting…";
+    try {
+      var res = await window.RLSScan.scanRepo(input, function (msg) { prog.textContent = msg; });
+      prog.textContent = "Scanned " + res.scanned + " files in " + res.repo + ".";
+      renderResults(res);
+    } catch (e) {
+      prog.textContent = "";
+      out.innerHTML = '<div class="finding high"><h4>' + esc(e.message) + '</h4><p>Check the URL, make sure the repo is public, then try again.</p></div>';
+    }
+    btn.disabled = false; btn.textContent = "Scan public repo";
+  };
+
+  function esc(s) { var d = document.createElement("div"); d.textContent = s || ""; return d.innerHTML; }
+
+  function renderResults(res) {
+    var out = document.getElementById("results");
+    if (!res.findings.length) {
+      out.innerHTML = '<div class="finding"><span class="sev clean">CLEAN SURFACE</span><h4>No RLS red flags in the public source scanned.</h4>' +
+        '<p>No committed secrets, no <code>using (true)</code> policies open to anon/public in the files this scan reads. This is a surface scan — a full audit checks grants, roles and runtime config too.</p>' +
+        ctaBlock(res.repo, "clean") + '</div>';
+      return;
+    }
+    var counts = { critical: 0, high: 0, medium: 0 };
+    res.findings.forEach(function (f) { counts[f.severity]++; });
+    var html = '<div class="finding"><span class="sev critical">' + counts.critical + ' critical</span> <span class="sev high">' + counts.high + ' high</span> <span class="sev medium">' + counts.medium + ' medium</span></div>';
+    res.findings.forEach(function (f) {
+      html += '<div class="finding ' + f.severity + '"><span class="sev ' + f.severity + '">' + f.severity.toUpperCase() + '</span>' +
+        '<h4>' + esc(f.title) + '</h4><div class="file">' + esc(f.file) + '</div>' +
+        '<p>' + esc(f.detail) + '</p>' +
+        '<details><summary>Verify it yourself (30 sec)</summary><pre>' + esc(f.verify) + '</pre></details>' +
+        '<details><summary>The fix</summary><p>' + esc(f.fix) + '</p></details></div>';
+    });
+    html += ctaBlock(res.repo, "findings");
+    out.innerHTML = html;
+  }
+
+  function ctaBlock(repo, kind) {
+    var line = kind === "findings"
+      ? "These are surface findings from public source. A full audit maps every table, policy and grant — and comes with the remediation SQL."
+      : "Want the deeper check anyway? The full audit maps grants, roles and runtime configuration.";
+    return '<div class="cta"><h3>' + (kind === "findings" ? "Get the full picture" : "Go deeper") + '</h3><p style="font-size:14.5px;margin:4px 0 0;">' + line + '</p>' +
+      '<div class="btnrow"><a class="btn primary" href="' + mailtoWithRepo(repo) + '">Request the audit — $99 / $199</a>' +
+      '<a class="btn secondary" href="https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=rls-site&utm_medium=scan_' + kind + '&utm_campaign=audit_offers&ref=' + encodeURIComponent(repo) + '">DIY Audit Kit ($29)</a></div></div>';
+  }
+
+  function mailtoWithRepo(repo) {
+    return base + "?subject=" + encodeURIComponent("RLS audit request — " + repo) +
+      "&body=" + encodeURIComponent("I scanned " + repo + " with the free checker and want the full audit.\nTier (Spot Check $99 / Full Audit $199): \n\n— sent from the RLS check page");
+  }
+})();
+</script>
+</body>
+</html>
