@@ -50,6 +50,12 @@ catches RLS switched off and RLS switched on with no policy behind it, and the
 query further down this page tells you the same thing directly. If that is all
 you needed, you are done and you have spent nothing.
 
+**Or skip the SQL editor entirely:** paste your public repo into the
+[free 30-second RLS checker](https://cekuu35.github.io/supabase-rls-leak-demo/?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=free_checker)
+— it scans your committed migrations and env files entirely in your own
+browser (public source only, no database access, nothing stored) and shows
+severity-ranked findings, each with its 30-second verify query.
+
 ### Free: [`audit/rls-audit.sql`](audit/rls-audit.sql)
 
 Nine read-only queries against the system catalogs, MIT, nothing to install
@@ -246,6 +252,19 @@ cross-tenant access paths across every table and policy and returning
 prioritized findings with reproduction notes and remediation guidance. Do not
 send production passwords, service-role keys or customer data; use sanitized
 schema and policy SQL, or an authorized staging or read-only setup.
+
+The same tiers are available directly by email (one line, repo URL + tier, human
+reply within one business day):
+[request the audit](https://cekuu35.github.io/supabase-rls-leak-demo/?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=audit_request#request)
+— **RLS Spot Check $99** (every table × policy rated, committed-secret sweep,
+verify query per finding) or **Full RLS Audit $199** (adds grants & role exposure
+review, write-path simulation, remediation SQL per finding). Remediation
+itself is quoted separately from the report — no surprises. Sample report and
+methodology: on the
+[checker site](https://cekuu35.github.io/supabase-rls-leak-demo/sample-report.html?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=sample_report).
+Supabase freelancers and small agencies: there is a
+[partner program](https://cekuu35.github.io/supabase-rls-leak-demo/partners.html?utm_source=github&utm_medium=readme&utm_campaign=audit_offers&utm_content=partners)
+— 20% per referred audit, −30% wholesale for your own client work.
 
 Before ordering, you can inspect the
 [synthetic sample audit report](SAMPLE_AUDIT_REPORT.md) to see the structure,

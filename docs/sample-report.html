@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample RLS audit report — anonymized, real findings</title>
+<style>
+  :root { --ink:#0f172a; --mut:#55607a; --line:#e2e8f0; --bg:#f8fafc; --acc:#0e7490; --crit:#b91c1c; --high:#c2410c; --med:#a16207; }
+  * { box-sizing:border-box; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); margin:0; line-height:1.6; }
+  .wrap { max-width:820px; margin:0 auto; padding:24px 20px 64px; }
+  header nav { display:flex; gap:16px; justify-content:flex-end; font-size:14px; padding:8px 0; }
+  header nav a { color:var(--mut); text-decoration:none; }
+  h1 { font-size:28px; margin:8px 0 6px; }
+  .sub { color:var(--mut); font-size:15px; margin:0 0 20px; }
+  .report { background:#fff; border:1px solid var(--line); border-radius:12px; padding:28px; }
+  .report h2 { font-size:20px; margin:18px 0 8px; }
+  .report h3 { font-size:16px; margin:20px 0 6px; }
+  .sev { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+  .sev.critical { background:#fee2e2; color:var(--crit); }
+  .sev.high { background:#ffedd5; color:var(--high); }
+  .sev.medium { background:#fef9c3; color:var(--med); }
+  .finding { border-left:3px solid var(--line); padding-left:14px; margin:18px 0; }
+  .finding.critical { border-color:var(--crit); } .finding.high { border-color:var(--high); } .finding.medium { border-color:var(--med); }
+  code, pre { font-family:ui-monospace, monospace; font-size:13px; background:#f1f5f9; border-radius:6px; }
+  code { padding:1px 6px; }
+  pre { padding:12px; overflow:auto; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:10px 0; }
+  th, td { border:1px solid var(--line); padding:7px 10px; text-align:left; }
+  th { background:#f1f5f9; }
+  .note { color:var(--mut); font-size:13px; }
+  .btn { display:inline-block; padding:12px 20px; border-radius:8px; font-weight:600; text-decoration:none; background:var(--acc); color:#fff; margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><nav>
+  <a href="index.html">← Free check</a>
+  <a href="methodology.html">Methodology</a>
+  <a href="partners.html">Partners</a>
+</nav></header>
+
+<h1>Sample audit report</h1>
+<p class="sub">This is a real audit performed on a live production app (a university dorm-management system), anonymized. Every finding carries its 30-second verify query — that's the standard format you receive. Owners were notified the same day.</p>
+
+<div class="report">
+  <h2>RLS Spot Check — <span class="note">client: [redacted], dorm-management SaaS, Supabase + Next.js</span></h2>
+
+  <table>
+    <tr><th>Severity</th><th>Finding</th><th>Table / file</th></tr>
+    <tr><td><span class="sev high">HIGH</span></td><td>Staff table fully readable by anonymous users</td><td><code>public.staff</code></td></tr>
+    <tr><td><span class="sev high">HIGH</span></td><td>Cleaning/duty schedule readable by anyone</td><td><code>cleaning_schedule</code></td></tr>
+    <tr><td><span class="sev medium">MEDIUM</span></td><td>Any authenticated user can rewrite the duty schedule</td><td><code>cleaning_schedule</code></td></tr>
+  </table>
+
+  <div class="finding high">
+    <span class="sev high">HIGH</span>
+    <h3>The <code>staff</code> table is readable by anyone with the anon key</h3>
+    <p>In <code>supabase/migrations/…_initial_schema.sql</code>:</p>
+    <pre>CREATE POLICY "Anon email existence check"
+ON public.staff FOR SELECT
+TO anon
+USING (true);</pre>
+    <p>The comment says it was added for the login page's email check. But <code>USING (true)</code> on <code>FOR SELECT TO anon</code> exposes <b>every column of every staff row</b>: <code>email</code>, <code>phone_number</code>, <code>full_name</code>, <code>staff_id</code>, <code>role</code>, <code>assigned_floor</code>, <code>assigned_gender</code>.</p>
+    <p><b>Verify (30 sec)</b> — Supabase SQL editor:</p>
+    <pre>select policyname, roles, cmd, qual
+from pg_policies
+where tablename = 'staff';</pre>
+    <p>You'll see <code>roles = {anon}</code> and <code>qual = true</code>.</p>
+    <p><b>Fix:</b> don't open the table for a lookup — wrap the lookup:</p>
+    <pre>create or replace function public.staff_email_exists(email text)
+returns boolean language sql security definer
+set search_path = public as $$
+  select exists(select 1 from public.staff s
+               where s.email = staff_email_exists.email);
+$$;
+
+revoke all on public.staff from anon;
+drop policy "Anon email existence check" on public.staff;</pre>
+  </div>
+
+  <div class="finding medium">
+    <span class="sev medium">MEDIUM</span>
+    <h3>Any authenticated user can rewrite the duty schedule</h3>
+    <pre>CREATE POLICY "Allow authenticated insert/update" ON cleaning_schedule
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);</pre>
+    <p>Any student account can insert, rewrite, or erase duty-roster rows. Integrity loss among authenticated users.</p>
+    <p><b>Fix:</b> scope writes to the staffing role and a row predicate: <code>TO authenticated USING (exists (select 1 from staff s where s.id = auth.uid() and s.role in ('admin','tarbiyachi')))</code>.</p>
+  </div>
+
+  <h2>What the full tier adds</h2>
+  <p class="note">Grants & role exposure review (the gates around RLS), write-path simulation on a fixture clone of your schema, and remediation SQL per finding with severity-ranked fix-hours.</p>
+
+  <a class="btn" href="index.html">Run the free check on your repo →</a>
+</div>
+</div>
+</body>
+</html>
