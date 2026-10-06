@@ -98,23 +98,25 @@
 <div class="grid">
   <div class="card">
     <h3>RLS Spot Check</h3>
-    <div class="price">$99 <small>fixed</small></div>
+    <div class="price">$99 <small>fixed · 48h</small></div>
     <ul>
       <li>Every table × every policy, rated: missing / permissive / correct</li>
       <li>Committed-secret sweep of the repo</li>
       <li>30-second verify query per finding</li>
       <li>Written report, 48h turnaround</li>
     </ul>
+    <a class="btn primary" style="display:block;text-align:center;margin-top:14px;" href="https://cengokurtoglu.gumroad.com/l/rls-spot-check?utm_source=rls-site&utm_medium=pricing_card&utm_campaign=audit_offers&utm_content=spot_buy">Buy now</a>
   </div>
   <div class="card">
     <h3>Full RLS Audit</h3>
-    <div class="price">$199 <small>fixed</small></div>
+    <div class="price">$199 <small>fixed · 48h</small></div>
     <ul>
       <li>Everything in the Spot Check</li>
       <li>Grants & role exposure review (the gates around RLS)</li>
       <li>Write-path simulation on a fixture clone of your schema</li>
       <li>Remediation SQL per finding + severity-ranked fix hours</li>
     </ul>
+    <a class="btn primary" style="display:block;text-align:center;margin-top:14px;" href="https://cengokurtoglu.gumroad.com/l/syrpag?utm_source=rls-site&utm_medium=pricing_card&utm_campaign=audit_offers&utm_content=full_buy">Buy now</a>
   </div>
   <div class="card">
     <h3>Remediation</h3>
@@ -124,6 +126,7 @@
       <li>Regression tests so the hole can't reopen</li>
       <li>Priced per the report — no surprises</li>
     </ul>
+    <a class="btn secondary" style="display:block;text-align:center;margin-top:14px;" href="mailto:cnkkurtoglu@gmail.com?subject=Remediation%20request&body=Repo%3A%20%0AAudit%20done%3A%20(yes%2Fno)%0A">Get a quote</a>
   </div>
 </div>
 
@@ -131,9 +134,11 @@
   <h3>Request an audit</h3>
   <p style="font-size:15px; margin:6px 0 0;">Email one line — your repo URL and which tier — and you'll get a confirmation with scope and turnaround within one business day.</p>
   <div class="btnrow">
-    <a id="requestAuditBtn" class="btn primary" href="#">Request an audit (email)</a>
-    <a class="btn secondary" href="https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=rls-site&utm_medium=landing&utm_campaign=audit_offers">DIY Audit Kit ($29, Gumroad)</a>
+    <a class="btn primary" href="https://cengokurtoglu.gumroad.com/l/rls-spot-check?utm_source=rls-site&utm_medium=landing&utm_campaign=audit_offers&utm_content=spot_buy">Buy RLS Spot Check — $99</a>
+    <a class="btn primary" href="https://cengokurtoglu.gumroad.com/l/syrpag?utm_source=rls-site&utm_medium=landing&utm_campaign=audit_offers&utm_content=full_buy">Buy Full RLS Audit — $199</a>
+    <a class="btn secondary" href="https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=rls-site&utm_medium=landing&utm_campaign=audit_offers&utm_content=kit">DIY Kit ($29)</a>
   </div>
+  <p style="font-size:14px; margin:12px 0 0; color:var(--mut);">Questions first, or want remediation after an audit? <a id="requestAuditBtn" class="acc" href="#">Email Cenk directly</a> — human reply within one business day.</p>
   <div style="margin-top:14px; padding:12px 14px; background:#fff; border:1px solid var(--line); border-radius:8px; font-size:14px;">
     <b>Crypto accepted:</b> USDT (TRC-20). Flow: request by email first → scope confirmed → pay → audit delivered.
     Address: <code style="user-select:all; font-size:13px; padding:2px 8px; background:#f1f5f9; border-radius:4px; word-break:break-all;">TTTfFLWYGaEyBwBaGu4K2LqQfRr4ocbhPC</code>
@@ -221,8 +226,10 @@
       ? "These are surface findings from public source. A full audit maps every table, policy and grant — and comes with the remediation SQL."
       : "Want the deeper check anyway? The full audit maps grants, roles and runtime configuration.";
     return '<div class="cta"><h3>' + (kind === "findings" ? "Get the full picture" : "Go deeper") + '</h3><p style="font-size:14.5px;margin:4px 0 0;">' + line + '</p>' +
-      '<div class="btnrow"><a class="btn primary" href="' + mailtoWithRepo(repo) + '">Request the audit — $99 / $199</a>' +
-      '<a class="btn secondary" href="https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=rls-site&utm_medium=scan_' + kind + '&utm_campaign=audit_offers&ref=' + encodeURIComponent(repo) + '">DIY Audit Kit ($29)</a></div></div>';
+      '<div class="btnrow"><a class="btn primary" href="https://cengokurtoglu.gumroad.com/l/rls-spot-check?utm_source=rls-site&utm_medium=scan_' + kind + '&utm_campaign=audit_offers&utm_content=spot_buy">Spot Check — $99</a>' +
+      '<a class="btn primary" href="https://cengokurtoglu.gumroad.com/l/syrpag?utm_source=rls-site&utm_medium=scan_' + kind + '&utm_campaign=audit_offers&utm_content=full_buy">Full Audit — $199</a>' +
+      '<a class="btn secondary" href="https://cengokurtoglu.gumroad.com/l/supabase-rls-audit-kit?utm_source=rls-site&utm_medium=scan_' + kind + '&utm_campaign=audit_offers&ref=' + encodeURIComponent(repo) + '">DIY Kit ($29)</a></div>' +
+      '<p style="font-size:13.5px;margin:10px 0 0;color:var(--mut);">Or <a class="acc" href="' + mailtoWithRepo(repo) + '">email Cenk directly</a> (crypto/USDT accepted — email first).</p></div>';
   }
 
   function mailtoWithRepo(repo) {
