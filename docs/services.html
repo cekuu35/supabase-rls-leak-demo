@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Software services — audits, hardening, fixes, custom work</title>
+<style>
+  :root { --ink:#0f172a; --mut:#55607a; --line:#e2e8f0; --bg:#f8fafc; --acc:#0e7490; }
+  * { box-sizing:border-box; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); margin:0; line-height:1.6; }
+  .wrap { max-width:880px; margin:0 auto; padding:24px 20px 64px; }
+  header nav { display:flex; gap:16px; justify-content:flex-end; font-size:14px; padding:8px 0; flex-wrap:wrap; }
+  header nav a { color:var(--mut); text-decoration:none; }
+  h1 { font-size:30px; margin:8px 0 8px; letter-spacing:-0.5px; }
+  h2 { font-size:22px; margin:34px 0 10px; }
+  .sub { color:var(--mut); font-size:16px; margin:0 0 20px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px; margin:16px 0; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:16px; }
+  .price { font-size:24px; font-weight:800; margin:2px 0; }
+  .price small { font-size:13px; color:var(--mut); font-weight:400; }
+  .card p { font-size:14px; color:var(--mut); margin:6px 0 12px; }
+  .btn { display:block; text-align:center; padding:11px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:14.5px; background:var(--acc); color:#fff; }
+  .btn.secondary { background:#fff; color:var(--acc); border:1px solid var(--acc); }
+  ul.menu { padding-left:20px; font-size:15px; color:var(--mut); }
+  ul.menu li { margin:7px 0; }
+  ul.menu b { color:var(--ink); }
+  .cta { background:#ecfeff; border:1px solid #a5f3fc; border-radius:12px; padding:20px; margin-top:20px; }
+  footer { color:var(--mut); font-size:13px; border-top:1px solid var(--line); margin-top:48px; padding-top:18px; }
+  footer a { color:var(--mut); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><nav>
+  <a href="index.html">Free RLS check</a>
+  <a href="sample-report.html">Sample report</a>
+  <a href="methodology.html">Methodology</a>
+  <a href="partners.html">Partners</a>
+</nav></header>
+
+<h1>Software work, done properly</h1>
+<p class="sub">The audits are the specialty — but the same stack gets built, fixed, and hardened for clients end-to-end: Next.js, React, TypeScript, Supabase/Postgres, Python, n8n. Fixed prices where the scope is known; a same-day quote when it isn't.</p>
+
+<h2>Productized services (instant, via Gumroad)</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Supabase Migration Review</h3>
+    <div class="price">$299</div>
+    <p>Schema + RLS + grants audit across your migration path — catch the regressions before production does.</p>
+    <a class="btn" href="https://cengokurtoglu.gumroad.com/l/supabase-migration-review?utm_source=rls-site&utm_medium=services&utm_campaign=services">Get it</a>
+  </div>
+  <div class="card">
+    <h3>Edge Function Security Hardening</h3>
+    <div class="price">$299</div>
+    <p>CORS, rate limiting, JWT handling and input validation for your edge functions — hardened to a checklist you can re-run.</p>
+    <a class="btn" href="https://cengokurtoglu.gumroad.com/l/edge-function-security-hardening?utm_source=rls-site&utm_medium=services&utm_campaign=services">Get it</a>
+  </div>
+  <div class="card">
+    <h3>File Upload Security</h3>
+    <div class="price">$199</div>
+    <p>Signed URLs, MIME validation, size caps — upload paths are the most commonly broken surface in shipped apps.</p>
+    <a class="btn" href="https://cengokurtoglu.gumroad.com/l/file-upload-security?utm_source=rls-site&utm_medium=services&utm_campaign=services">Get it</a>
+  </div>
+  <div class="card">
+    <h3>Vibe Coder Security Pack</h3>
+    <div class="price">$39</div>
+    <p>DIY hardening checklist for AI-built Supabase apps — the checks I run, in copy-paste form.</p>
+    <a class="btn" href="https://cengokurtoglu.gumroad.com/l/chitwp?utm_source=rls-site&utm_medium=services&utm_campaign=services">Get it</a>
+  </div>
+  <div class="card">
+    <h3>HIPAA / SOC2 Evidence Package</h3>
+    <div class="price">$1,999</div>
+    <p>Automated RLS access-control evidence for compliance reviews — for teams that need it in writing.</p>
+    <a class="btn" href="https://cengokurtoglu.gumroad.com/l/hipaa-soc2-evidence-package?utm_source=rls-site&utm_medium=services&utm_campaign=services">Get it</a>
+  </div>
+</div>
+
+<h2>Custom work (email first, same-day quote)</h2>
+<ul class="menu">
+  <li><b>Bug fixes & debugging</b> — Next.js, React, TypeScript, Supabase/Postgres, Python. You send the repo + the symptom; you get the diagnosis, the fix, and a regression test.</li>
+  <li><b>Features & integrations</b> — payment webhooks (Stripe/Paddle), auth flows, third-party APIs, dashboards on top of your existing schema.</li>
+  <li><b>n8n automations & scripts</b> — pipelines that glue your tools together, documented and maintainable.</li>
+  <li><b>Small apps & internal tools</b> — the 1–4 week tools that agencies quote 3 months for.</li>
+  <li><b>Launch passes</b> — pre-deploy reviews for Next.js + Supabase apps (secrets, RLS, auth, performance, env setup).</li>
+</ul>
+
+<div class="cta">
+  <h3 style="margin:0 0 8px;">Get a quote</h3>
+  <p style="font-size:15px; margin:4px 0 0;">One email: what's broken or what you need built, your repo or stack, your timeline. You get a fixed price the same day — or a 15-minute scope question if it's genuinely unclear.</p>
+  <a class="btn" style="margin-top:14px; max-width:340px;" href="mailto:cnkkurtoglu@gmail.com?subject=Software%20work%20—%20quote%20request&body=What%20I%20need%3A%20%0AStack%20%2F%20repo%3A%20%0ATimeline%3A%20%0ABudget%20range%20(optional)%3A%20">Email the brief</a>
+</div>
+
+<footer>
+  Same operator as the <a href="index.html">free RLS checker</a> — the audits stay the specialty, this is the rest of the toolbox. · Payments: Gumroad or USDT (TRC-20 / EVM), always after scope is confirmed. · © 2026 Cenk Kurtoglu
+</footer>
+</div>
+</body>
+</html>
