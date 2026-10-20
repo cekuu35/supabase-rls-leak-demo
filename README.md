@@ -246,6 +246,7 @@ Zero-dependency, runs-locally, free-forever. Same red/green philosophy as this r
 - [github-actions-audit](https://github.com/cekuu35/github-actions-audit) -- pwn requests and script injection in CI workflows
 - [firebase-rules-audit](https://github.com/cekuu35/firebase-rules-audit) -- open access in Firestore / Storage rules
 - [n8n-workflow-audit](https://github.com/cekuu35/n8n-workflow-audit) -- hardcoded credentials in exported n8n workflows
+- [stripe-webhook-audit](https://github.com/cekuu35/stripe-webhook-audit) -- Stripe webhook handlers that trust events without signature verification
 
 ## Broader launch review
 
