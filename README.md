@@ -1,4 +1,4 @@
-﻿# Supabase/Postgres RLS isolation failure: a minimal reproducible example
+# Supabase/Postgres RLS isolation failure: a minimal reproducible example
 
 [![CI](https://github.com/cekuu35/supabase-rls-leak-demo/actions/workflows/ci.yml/badge.svg?branch=fixed)](https://github.com/cekuu35/supabase-rls-leak-demo/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/cekuu35/supabase-rls-leak-demo?label=stable%20release)](https://github.com/cekuu35/supabase-rls-leak-demo/releases/tag/v1.0.0)
@@ -236,6 +236,16 @@ This repository is AI-assisted and human-reviewed. Some earlier commit
 trailers contain a specific model label inserted by an automated tool; that
 label was not independently verified and should not be treated as model
 attestation.
+
+## More free auditors -- the audit family
+
+Zero-dependency, runs-locally, free-forever. Same red/green philosophy as this repo:
+
+- [mcp-config-security](https://github.com/cekuu35/mcp-config-security) -- scan MCP client configs (Claude, Cursor, Windsurf) for leaked tokens
+- [supabase-service-role-scanner](https://github.com/cekuu35/supabase-service-role-scanner) -- find service_role keys exposed to the browser
+- [github-actions-audit](https://github.com/cekuu35/github-actions-audit) -- pwn requests and script injection in CI workflows
+- [firebase-rules-audit](https://github.com/cekuu35/firebase-rules-audit) -- open access in Firestore / Storage rules
+- [n8n-workflow-audit](https://github.com/cekuu35/n8n-workflow-audit) -- hardcoded credentials in exported n8n workflows
 
 ## Broader launch review
 
