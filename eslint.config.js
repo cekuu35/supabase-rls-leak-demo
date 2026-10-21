@@ -12,4 +12,10 @@ export default tseslint.config(
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
+  {
+    files: ['docs/**'],
+    languageOptions: {
+      globals: { fetch: 'readonly', atob: 'readonly', window: 'readonly', console: 'readonly' },
+    },
+  },
 )

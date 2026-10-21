@@ -21,7 +21,7 @@
       try {
         var r = await fetch(GH_RAW + "/" + repo + "/" + branches[i] + "/" + path);
         if (r.ok) return r.text();
-      } catch (e) { /* try next branch */ }
+      } catch { /* try next branch */ }
     }
     return null;
   }
@@ -33,12 +33,12 @@
 
   function decodeJwtPayload(token) {
     try {
-      var m = /eyJ[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}/.exec(token || "");
+      var m = /eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/.exec(token || "");
       if (!m) return null;
       var b64 = m[0].split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
       while (b64.length % 4) b64 += "=";
       return JSON.parse(atob(b64));
-    } catch (e) { return null; }
+    } catch { return null; }
   }
 
   function listInterestingFiles(tree) {
@@ -100,7 +100,7 @@
         fix: "Rotate the key in Supabase dashboard → Settings → API FIRST, then remove the file and purge git history."
       });
     }
-    if (/sb_secret_[A-Za-z0-9_\-]{8,}/.test(content) && !/sb_secret_(replace_me|your|\.\.\.|xxx)/i.test(content)) {
+    if (/sb_secret_[A-Za-z0-9_-]{8,}/.test(content) && !/sb_secret_(replace_me|your|\.\.\.|xxx)/i.test(content)) {
       findings.push({
         severity: "critical",
         file: file,
@@ -121,20 +121,20 @@
     else if (/^[\w.-]+\/[\w.-]+$/.test(input.trim())) repo = input.trim();
     else throw new Error("Enter a GitHub repo URL or owner/repo (public repos only)");
     repo = repo.replace(/\/+$/, "");
-    onProgress && onProgress("Reading repository tree…");
+    if (onProgress) onProgress("Reading repository tree…");
     var treeData = await ghJSON(GH_API + "/repos/" + repo + "/git/trees/HEAD?recursive=1");
     var files = listInterestingFiles(treeData.tree || []);
     var findings = [];
 
     // env files
     for (var i = 0; i < files.envFiles.length; i++) {
-      onProgress && onProgress("Checking " + files.envFiles[i] + "…");
+      if (onProgress) onProgress("Checking " + files.envFiles[i] + "…");
       var envContent = await rawText(repo, files.envFiles[i]);
       if (envContent) scanEnvText(envContent, files.envFiles[i], findings);
     }
     // sql migrations
     for (var j = 0; j < files.sqlFiles.length; j++) {
-      onProgress && onProgress("Reading " + files.sqlFiles[j] + "…");
+      if (onProgress) onProgress("Reading " + files.sqlFiles[j] + "…");
       var sqlContent = await rawText(repo, files.sqlFiles[j]);
       if (sqlContent) scanPolicyText(sqlContent, files.sqlFiles[j], findings);
     }
