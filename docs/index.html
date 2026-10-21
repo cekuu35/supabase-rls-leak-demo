@@ -172,7 +172,7 @@
   var base = "mailto:cnkkurtoglu@gmail.com";
   document.getElementById("requestAuditBtn").href = base +
     "?subject=" + encodeURIComponent("RLS audit request") +
-    "&body=" + encodeURIComponent("Repo: \nTier (Spot Check $99 / Full Audit $199): \nAnything specific you're worried about: \n\n— sent from the RLS check page");
+    "&body=" + encodeURIComponent("Repo: \nTier (Spot Check $99 / Full Audit — custom scope): \nAnything specific you're worried about: \n\n— sent from the RLS check page");
 
   window.fillExample = function () {
     document.getElementById("repoInput").value = "https://github.com/cekuu35/supabase-rls-leak-demo";
@@ -233,7 +233,7 @@
 
   function mailtoWithRepo(repo) {
     return base + "?subject=" + encodeURIComponent("RLS audit request — " + repo) +
-      "&body=" + encodeURIComponent("I scanned " + repo + " with the free checker and want the full audit.\nTier (Spot Check $99 / Full Audit $199): \n\n— sent from the RLS check page");
+      "&body=" + encodeURIComponent("I scanned " + repo + " with the free checker and want the full audit.\nTier (Spot Check $99 / Full Audit — custom scope): \n\n— sent from the RLS check page");
   }
 })();
 </script>
