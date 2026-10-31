@@ -42,41 +42,53 @@ try {
   )
 }
 
-const policiesApplied = existsSync(policiesPath)
+// Each case is branch-local: a test file and the schema it boots. The counts
+// per branch state differ by case because some cases exercise the fixed
+// path (they pass either way - they document *and* close the hole) while
+// others compare against the policies that only the fixed branch carries
+// (one test of the pair is red on broken by design, which is the point).
+//
+// `fixed` / `broken` below are the expected PASSED counts per case.
+const CASES = [
+  {
+    test: 'service-role-leak.test.ts',
+    schema: 'schema.service-role.sql',
+    fixed: 3,
+    broken: 3,
+  },
+  {
+    test: 'definer-view-leak.test.ts',
+    schema: 'schema.definer-view.sql',
+    fixed: 3,
+    broken: 2,
+  },
+]
 
-// Case 3 (the service-role path) is a branch-local pair: the test file and
-// the schema file it boots. The broken and fixed branches of the original
-// pair have neither; the branch that carries the case has both. The keying
-// file is the test — it is what enters vitest's total. If the test is
-// present without the schema, its beforeAll throws and the three tests fail,
-// which is exactly what verification should refuse to pass: an inconsistent
-// branch state is not a valid signature.
-const case3TestApplied = existsSync(
-  fileURLToPath(new URL('../tests/service-role-leak.test.ts', import.meta.url)),
-)
-const case3SchemaApplied = existsSync(
-  fileURLToPath(new URL('../db/schema.service-role.sql', import.meta.url)),
-)
-const case3 = case3TestApplied
-  ? { numPassedTests: case3SchemaApplied ? 3 : 0, numFailedTests: case3SchemaApplied ? 0 : 3 }
-  : { numPassedTests: 0, numFailedTests: 0 }
+const policiesApplied = existsSync(policiesPath)
 
 const base = policiesApplied
   ? { numPassedTests: 5, numFailedTests: 0 }
   : { numPassedTests: 1, numFailedTests: 4 }
 
-// A case-3 test file without its schema is not a valid branch state: the
-// harness boots the schema, so its absence is a mistake, not a
-// configuration. Refuse to score it rather than bake the mistake in.
-if (case3TestApplied && !case3SchemaApplied) {
-  fail(
-    'tests/service-role-leak.test.ts is present but db/schema.service-role.sql is not — ' +
-      'an inconsistent branch state, not a valid signature',
-  )
+let numPassedTests = base.numPassedTests
+let numFailedTests = base.numFailedTests
+
+for (const c of CASES) {
+  const testApplied = existsSync(fileURLToPath(new URL(`../tests/${c.test}`, import.meta.url)))
+  const schemaApplied = existsSync(fileURLToPath(new URL(`../db/${c.schema}`, import.meta.url)))
+  if (!testApplied) continue
+
+  // A case test without its schema is not a valid branch state: the harness
+  // boots the schema, so its absence is a mistake, not a configuration.
+  if (!schemaApplied) {
+    fail(`${c.test} is present but db/${c.schema} is not — an inconsistent branch state, not a valid signature`)
+  }
+
+  const passed = policiesApplied ? c.fixed : c.broken
+  numPassedTests += passed
+  numFailedTests += 3 - passed
 }
 
-const numPassedTests = base.numPassedTests + case3.numPassedTests
-const numFailedTests = base.numFailedTests + case3.numFailedTests
 const success = numFailedTests === 0
 
 const expected = {

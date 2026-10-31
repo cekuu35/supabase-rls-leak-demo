@@ -246,6 +246,25 @@ then switches to the `service_role` role - the posture of a real trusted
 server call, where the caller's identity is available to be checked and
 nothing is checked unless the body asks.
 
+### Case 1 - the SECURITY DEFINER view
+
+`tests/definer-view-leak.test.ts` covers the view-layer version of the same
+failure, also from the Vercel discussion (@Bhanuteja005): a view over an
+RLS-protected table evaluates the base-table policies with the *view
+owner's* privileges, not the querying user's, so every policy on the base
+table is bypassed while `pg_policies` still shows all of them. Postgres 15+
+has the fix: `alter view v set (security_invoker = on)`.
+
+The branch ships the pair - `public.notes_view_definer` (the default) and
+`public.notes_view_invoker` (`security_invoker = on`) - so the assertions
+are comparative: through the default view user B receives user A's private
+note (the test passes *because* the leak reproduces), through the invoker
+view B receives only their own rows, and their own row still comes back so
+the fix cannot be faked by an empty view. One test of the pair is red on
+the `broken` branch by design - without policies there is nothing for the
+invoker view to enforce - which is why the CI verifier expects 6 passed /
+5 failed there rather than a flat count.
+
 ## What this is
 
 A synthetic minimal reproduction of one missing-RLS configuration. It is not

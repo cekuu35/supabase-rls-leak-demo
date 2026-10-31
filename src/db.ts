@@ -57,11 +57,13 @@ export async function createHarness(): Promise<Harness> {
 
   await db.exec(await readFile(SCHEMA_SQL, 'utf8'))
 
-  // Case 3 lives in its own file so the base schema stays shared between
-  // the broken/fixed branches. It is applied when the branch has it.
-  const SERVICE_ROLE_SQL = join(dbDir, 'schema.service-role.sql')
-  if (existsSync(SERVICE_ROLE_SQL)) {
-    await db.exec(await readFile(SERVICE_ROLE_SQL, 'utf8'))
+  // Cases 1 and 3 live in their own files so the base schema stays shared
+  // between the broken/fixed branches. Each is applied when the branch has it.
+  for (const name of ['schema.service-role.sql', 'schema.definer-view.sql']) {
+    const file = join(dbDir, name)
+    if (existsSync(file)) {
+      await db.exec(await readFile(file, 'utf8'))
+    }
   }
 
   const policiesApplied = existsSync(POLICIES_SQL)
