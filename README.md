@@ -217,9 +217,34 @@ its `authenticated` database role, asks for everything in `public.notes`, and
 asserts that nothing owned by user A comes back. It does not perform a real
 Supabase Auth sign-in.
 
-It also asserts that user B *can* still read their own row — otherwise
+It also asserts that user B *can* still read their own row - otherwise
 `revoke all` would pass the suite while breaking the fixture. A test that only
 checks the door is locked cannot tell you the key still works.
+
+### Case 3 - the service-role path with a client-supplied id
+
+`tests/service-role-leak.test.ts` covers the failure the broken/fixed pair
+cannot: a server action that takes an id from the client and looks the row up
+with the service-role credential. That query runs as `service_role`, which
+bypasses RLS by design, so no policy on the table changes its result - the
+case goes red on **both** branches, and `db/policies.sql` is not the fix.
+Reported independently by two reviewers in the
+[Vercel Next.js discussion](https://github.com/vercel/next.js/discussions/96888)
+(@PepBunny's server-action shape and @Bhanuteja005's framing of the
+cache case); the pair here is deliberately two functions rather than one:
+
+- `public.get_order_unchecked(p_id)` - returns the row for any caller. The
+  first test in the file passes *because* it returns user A's order to user B;
+  that is the fixture doing its job.
+- `public.get_order_checked(p_id)` - one added condition
+  (`user_id = auth.uid()`), same surface, and the third test asserts the
+  caller's own order still comes back, so the fix cannot be faked by denying
+  everything.
+
+The harness gained `asService`, which sets the same synthetic JWT subject and
+then switches to the `service_role` role - the posture of a real trusted
+server call, where the caller's identity is available to be checked and
+nothing is checked unless the body asks.
 
 ## What this is
 
