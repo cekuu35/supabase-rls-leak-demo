@@ -31,6 +31,17 @@ export interface Harness {
     sql: string,
     params?: unknown[],
   ) => Promise<T[]>
+  /**
+   * Run a query the way a trusted server runs one: as `service_role`,
+   * which carries BYPASSRLS. The caller's id is still on the request
+   * context, so a function body can check it — but nothing is checked
+   * unless the body asks.
+   */
+  asService: <T = Record<string, unknown>>(
+    userId: string,
+    sql: string,
+    params?: unknown[],
+  ) => Promise<T[]>
 }
 
 /**
@@ -45,6 +56,13 @@ export async function createHarness(): Promise<Harness> {
   const db = await PGlite.create()
 
   await db.exec(await readFile(SCHEMA_SQL, 'utf8'))
+
+  // Case 3 lives in its own file so the base schema stays shared between
+  // the broken/fixed branches. It is applied when the branch has it.
+  const SERVICE_ROLE_SQL = join(dbDir, 'schema.service-role.sql')
+  if (existsSync(SERVICE_ROLE_SQL)) {
+    await db.exec(await readFile(SERVICE_ROLE_SQL, 'utf8'))
+  }
 
   const policiesApplied = existsSync(POLICIES_SQL)
   if (policiesApplied) {
@@ -76,5 +94,23 @@ export async function createHarness(): Promise<Harness> {
     }
   }
 
-  return { db, policiesApplied, asUser }
+  const asService = async <T = Record<string, unknown>>(
+    userId: string,
+    sql: string,
+    params: unknown[] = [],
+  ): Promise<T[]> => {
+    await db.exec('begin')
+    try {
+      // The caller's identity is set exactly as a real request would set it,
+      // so a checked function body sees auth.uid() even on this path.
+      await db.query(`select set_config('request.jwt.claim.sub', $1, true)`, [userId])
+      await db.exec('set local role service_role')
+      const result = await db.query<T>(sql, params)
+      return result.rows
+    } finally {
+      await db.exec('rollback')
+    }
+  }
+
+  return { db, policiesApplied, asUser, asService }
 }

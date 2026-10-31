@@ -44,25 +44,50 @@ try {
 
 const policiesApplied = existsSync(policiesPath)
 
-const expected = policiesApplied
-  ? {
-      exitCode: 0,
-      success: true,
-      numTotalTests: 5,
-      numPassedTests: 5,
-      numFailedTests: 0,
-      numPendingTests: 0,
-      numTodoTests: 0,
-    }
-  : {
-      exitCode: 1,
-      success: false,
-      numTotalTests: 5,
-      numPassedTests: 1,
-      numFailedTests: 4,
-      numPendingTests: 0,
-      numTodoTests: 0,
-    }
+// Case 3 (the service-role path) is a branch-local pair: the test file and
+// the schema file it boots. The broken and fixed branches of the original
+// pair have neither; the branch that carries the case has both. The keying
+// file is the test — it is what enters vitest's total. If the test is
+// present without the schema, its beforeAll throws and the three tests fail,
+// which is exactly what verification should refuse to pass: an inconsistent
+// branch state is not a valid signature.
+const case3TestApplied = existsSync(
+  fileURLToPath(new URL('../tests/service-role-leak.test.ts', import.meta.url)),
+)
+const case3SchemaApplied = existsSync(
+  fileURLToPath(new URL('../db/schema.service-role.sql', import.meta.url)),
+)
+const case3 = case3TestApplied
+  ? { numPassedTests: case3SchemaApplied ? 3 : 0, numFailedTests: case3SchemaApplied ? 0 : 3 }
+  : { numPassedTests: 0, numFailedTests: 0 }
+
+const base = policiesApplied
+  ? { numPassedTests: 5, numFailedTests: 0 }
+  : { numPassedTests: 1, numFailedTests: 4 }
+
+// A case-3 test file without its schema is not a valid branch state: the
+// harness boots the schema, so its absence is a mistake, not a
+// configuration. Refuse to score it rather than bake the mistake in.
+if (case3TestApplied && !case3SchemaApplied) {
+  fail(
+    'tests/service-role-leak.test.ts is present but db/schema.service-role.sql is not — ' +
+      'an inconsistent branch state, not a valid signature',
+  )
+}
+
+const numPassedTests = base.numPassedTests + case3.numPassedTests
+const numFailedTests = base.numFailedTests + case3.numFailedTests
+const success = numFailedTests === 0
+
+const expected = {
+  exitCode: success ? 0 : 1,
+  success,
+  numTotalTests: numPassedTests + numFailedTests,
+  numPassedTests,
+  numFailedTests,
+  numPendingTests: 0,
+  numTodoTests: 0,
+}
 
 const actual = {
   exitCode: testRun.status,
